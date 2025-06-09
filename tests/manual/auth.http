@@ -1,0 +1,12 @@
+### LogIn
+POST http://127.0.0.1:8090/api/collections/users/auth-with-password
+Content-Type: application/json
+
+{
+    "identity": "sqlek@example.com",
+    "password": "very-secret"
+}
+
+### Refresh
+POST http://127.0.0.1:8090/api/collections/users/auth-refresh
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJfcGJfdXNlcnNfYXV0aF8iLCJleHAiOjE3NTAwODM0NTAsImlkIjoiN2QybG5hZzgwMm52ZWEyIiwicmVmcmVzaGFibGUiOnRydWUsInR5cGUiOiJhdXRoIn0.PW7oXAh28zYqTfHmt289lYX6Y0aBXy38kTWFN8zhLsw

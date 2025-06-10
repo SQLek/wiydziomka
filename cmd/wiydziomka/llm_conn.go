@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/pocketbase/dbx"
@@ -11,29 +12,14 @@ import (
 )
 
 func handleMessage(app core.App, chatId string) {
-	chat, err := app.FindRecordById("chats", chatId)
-	if err != nil {
-		fmt.Printf("Error finding chat: %v\n", err)
-		return
-	}
-
 	messages, err := app.FindRecordsByFilter(
 		"messages",
 		"chat = {:chatId}",
-		"-created",
+		"created",
 		100,
 		0,
 		dbx.Params{
 			"chatId": chatId,
-		},
-		dbx.Params{
-			"persona": "persona",
-		},
-		dbx.Params{
-			"useWith": "useWith",
-		},
-		dbx.Params{
-			"provider": "provider",
 		},
 	)
 
@@ -47,25 +33,34 @@ func handleMessage(app core.App, chatId string) {
 	for _, message := range messages {
 		messageContent = append(messageContent, map[string]string{
 			"role":    message.GetString("role"),
-			"content": message.GetString("content"),
+			"content": message.GetString("text"),
 		})
 	}
-	fmt.Printf("chat: %v\n", chat)
-	// Create and configure the HTTP request
 
-	persona := chat.ExpandedOne("persona")
-	fmt.Printf("persona: %v\n", persona)
+	// Create and configure the HTTP request
+	chatRecord, err := app.FindRecordById("chats", chatId)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Expand manually
+	expandErrors := app.ExpandRecord(chatRecord, []string{"persona", "persona.useWith", "persona.useWith.provider"}, nil)
+	if len(expandErrors) > 0 {
+		log.Fatal(expandErrors)
+	}
+
+	persona := chatRecord.ExpandedOne("persona")
 	models := persona.ExpandedAll("useWith")
 	// TODO search isPreferred = true
 	// TODO if not found, search isDefault = true
 	model := models[0]
 	provider := model.ExpandedOne("provider")
 	baseUrl := provider.GetString("baseUrl")
-
 	// Prepare the request body according to OpenAI API format
 	requestBody := map[string]interface{}{
-		"model":  model.GetString("ident"),
-		"stream": false,
+		"model":    model.GetString("ident"),
+		"stream":   false,
+		"messages": messageContent,
 	}
 
 	// Marshal the request body to JSON
@@ -75,7 +70,9 @@ func handleMessage(app core.App, chatId string) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", baseUrl, bytes.NewBuffer(jsonData))
+	fullUrl := baseUrl + "/chat/completions"
+
+	req, err := http.NewRequest("POST", fullUrl, bytes.NewBuffer(jsonData))
 
 	if err != nil {
 		fmt.Printf("Error creating request: %v\n", err)
@@ -134,7 +131,7 @@ func handleMessage(app core.App, chatId string) {
 	record := core.NewRecord(collection)
 	record.Set("chat", chatId)
 	record.Set("role", "assistant")
-	record.Set("content", openAIResponse.Choices[0].Message.Content)
+	record.Set("text", openAIResponse.Choices[0].Message.Content)
 
 	err = app.Save(record)
 	if err != nil {

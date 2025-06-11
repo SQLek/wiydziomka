@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	_ "github.com/SQLek/wiydziomka/migrations"
+	_ "github.com/SQLek/wiydziomka/cmd/wiydziomka/migrations"
 
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
@@ -33,7 +33,9 @@ func isInDev() bool {
 		return true
 	}
 
-	// TODO: detect go run
+	if strings.HasPrefix(os.Args[0], os.TempDir()) {
+		return true
+	}
 
 	return false
 }

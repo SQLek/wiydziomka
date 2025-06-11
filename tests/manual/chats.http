@@ -1,0 +1,23 @@
+### Get chats list
+GET http://127.0.0.1:8090/api/collections/chats/records
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJfcGJfdXNlcnNfYXV0aF8iLCJleHAiOjE3NTAxNDExOTIsImlkIjoidmFiMng4N3RxM3poczA3IiwicmVmcmVzaGFibGUiOnRydWUsInR5cGUiOiJhdXRoIn0.FVnaqxhxZRjRYgUtSqSHEMg4pCXXQgM-pkJM_Y95cjU
+
+### List messages for a given chat
+GET http://127.0.0.1:8090/api/collections/messages/records
+    ?filter=(chat = '9ek8j31ei59nlwg')
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJfcGJfdXNlcnNfYXV0aF8iLCJleHAiOjE3NTAxNDExOTIsImlkIjoidmFiMng4N3RxM3poczA3IiwicmVmcmVzaGFibGUiOnRydWUsInR5cGUiOiJhdXRoIn0.FVnaqxhxZRjRYgUtSqSHEMg4pCXXQgM-pkJM_Y95cjU
+
+### Add message to a chat
+POST http://127.0.0.1:8090/api/collections/messages/records
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJfcGJfdXNlcnNfYXV0aF8iLCJleHAiOjE3NTAxNDExOTIsImlkIjoidmFiMng4N3RxM3poczA3IiwicmVmcmVzaGFibGUiOnRydWUsInR5cGUiOiJhdXRoIn0.FVnaqxhxZRjRYgUtSqSHEMg4pCXXQgM-pkJM_Y95cjU
+Content-Type: application/json
+
+{
+    "chat": "9ek8j31ei59nlwg",
+    "role": "user",
+    "text": "Meow!"
+}
+
+### Soft delete a chat
+DELETE http://127.0.0.1:8090/api/collections/chats/records/9ek8j31ei59nlwg
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJfcGJfdXNlcnNfYXV0aF8iLCJleHAiOjE3NTAxNDExOTIsImlkIjoidmFiMng4N3RxM3poczA3IiwicmVmcmVzaGFibGUiOnRydWUsInR5cGUiOiJhdXRoIn0.FVnaqxhxZRjRYgUtSqSHEMg4pCXXQgM-pkJM_Y95cjU

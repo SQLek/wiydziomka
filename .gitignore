@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# golang and pocketbase related
+__debug_bin*
+pb_data

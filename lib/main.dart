@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wyidziomka/pocketbase_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,15 +47,44 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List<Map<String, String>> _messages = [];
   final TextEditingController _controller = TextEditingController();
+  final PocketBaseService _pbService = PocketBaseService();
 
-  void _sendMessage() {
+  @override
+  void initState() {
+    super.initState();
+    _loadMessages();
+  }
+
+  Future<void> _loadMessages() async {
+    try {
+      final msgs = await _pbService.getMessages();
+      setState(() {
+        _messages.clear();
+        _messages.addAll(msgs.map((m) => {
+          'role': m['role'] ?? '',
+          'text': m['text'] ?? '',
+        }));
+      });
+    } catch (e) {
+      // Handle error (optional)
+    }
+  }
+
+  void _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
     setState(() {
       _messages.add({'role': 'user', 'text': text});
-      _messages.add({'role': 'ai', 'text': 'Why do you say: "$text"?'});
-      _controller.clear();
     });
+    _controller.clear();
+    // Save user message
+    await _pbService.createMessage(text, 'user');
+    // Save AI response
+    final aiText = 'Why do you say: "$text"?';
+    setState(() {
+      _messages.add({'role': 'ai', 'text': aiText});
+    });
+    await _pbService.createMessage(aiText, 'ai');
   }
 
   @override

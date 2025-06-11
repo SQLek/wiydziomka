@@ -23,4 +23,8 @@ class PocketBaseService {
     });
     return record.toJson();
   }
+
+  Future<void> login(String email, String password) async {
+    await pb.collection('users').authWithPassword(email, password);
+  }
 }

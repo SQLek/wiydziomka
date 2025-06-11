@@ -12,11 +12,7 @@
             "program": "${workspaceFolder}/cmd/wiydziomka",
             "args": [
                 "serve",
-                "--dev",
-                "--dir",
-                "${workspaceFolder}/pb_data",
-            ],
-            "cwd": "${workspaceFolder}"
+            ]
         }
     ]
 }

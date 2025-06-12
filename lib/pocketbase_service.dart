@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 class PocketBaseService {
   late final PocketBase pb;
 
-  PocketBaseService() {
-    final String baseUrl = kIsWeb
-      ? Uri.base.origin // Use current origin for PWA
-      : 'http://localhost:8090'; // Use localhost for dev
-    pb = PocketBase(baseUrl);
+  PocketBaseService({String? baseUrl}) {
+    // Use --dart-define=POCKETBASE_URL=... to set this at build/run time
+    final String url = baseUrl ??
+        const String.fromEnvironment('POCKETBASE_URL', defaultValue: 'http://localhost:8090');
+    pb = PocketBase(url);
   }
 
   Future<List<Map<String, dynamic>>> getMessages() async {

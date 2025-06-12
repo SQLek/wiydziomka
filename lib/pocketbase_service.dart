@@ -3,15 +3,14 @@ import 'package:pocketbase/pocketbase.dart';
 class PocketBaseService {
   late final PocketBase pb;
 
-  PocketBaseService({String? baseUrl}) {
-    // Use --dart-define=POCKETBASE_URL=... to set this at build/run time
+  PocketBaseService({String? baseUrl, AuthStore? authStore}) {
     final String url =
         baseUrl ??
         const String.fromEnvironment(
           'POCKETBASE_URL',
           defaultValue: 'http://localhost:8090',
         );
-    pb = PocketBase(url);
+    pb = PocketBase(url, authStore: authStore);
   }
 
   Future<List<Map<String, dynamic>>> getMessages() async {

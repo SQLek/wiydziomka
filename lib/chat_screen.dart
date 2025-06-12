@@ -14,6 +14,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   late final PocketBaseService _pbService;
   int _selectedIndex = 1; // Default to middle selected
+  String? _chatId; // Store the current chat id
 
   @override
   void didChangeDependencies() {
@@ -42,16 +43,40 @@ class _ChatScreenState extends State<ChatScreen> {
   void _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
+
+    // If this is the first message, create a chat first
+    if (_messages.isEmpty || _chatId == null) {
+      print('Creating new chat...');
+      // Get the selected persona id
+      final personas = await _pbService.pb.collection('personas').getFullList();
+      final personaId = personas[_selectedIndex].get<String>('id');
+      final userId = _pbService.pb.authStore.record?.get<String>('id');
+      final chat = await _pbService.pb.collection('chats').create(body: {
+        'user': userId,
+        'persona': personaId,
+      });
+      _chatId = chat.id;
+    }
+
     setState(() {
       _messages.add({'role': 'user', 'text': text});
     });
     _controller.clear();
-    await _pbService.createMessage(text, 'user');
+    // Create message with chat relation
+    await _pbService.pb.collection('messages').create(body: {
+      'text': text,
+      'role': 'user',
+      'chat': _chatId,
+    });
     final aiText = 'Why do you say: "$text"?';
     setState(() {
       _messages.add({'role': 'ai', 'text': aiText});
     });
-    await _pbService.createMessage(aiText, 'ai');
+    await _pbService.pb.collection('messages').create(body: {
+      'text': aiText,
+      'role': 'assistant',
+      'chat': _chatId,
+    });
   }
 
   Widget _buildSelectionPanel() {

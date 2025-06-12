@@ -4,15 +4,36 @@ import 'package:wyidziomka/pocketbase_service.dart';
 import 'package:wyidziomka/login_screen.dart';
 import 'package:wyidziomka/chat_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('pb_auth_token');
-  final pbService = PocketBaseService();
-  if (token != null && token.isNotEmpty) {
-    pbService.pb.authStore.save(token, null);
+
+  final store = AsyncAuthStore(
+    save: (String data) async => prefs.setString('pb_auth', data),
+    initial: prefs.getString('pb_auth'),
+  );
+
+  final pbService = PocketBaseService(authStore: store);
+
+  // Try to restore user record if token is valid
+  if (pbService.pb.authStore.isValid) {
+    try {
+      final userId = pbService.pb.authStore.model.id;
+      if (userId != null) {
+        final userRecord = await pbService.pb
+            .collection('users')
+            .getOne(userId);
+        final token = pbService.pb.authStore.token;
+        pbService.pb.authStore.save(token, userRecord);
+      }
+    } catch (e) {
+      pbService.pb.authStore.clear();
+      await prefs.remove('pb_auth');
+    }
   }
+
   runApp(Provider<PocketBaseService>.value(value: pbService, child: MyApp()));
 }
 

@@ -49,68 +49,13 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildSelectionPanel() {
-    final images = [
-      Icons.emoji_emotions_outlined,
-      Icons.emoji_objects_outlined,
-      Icons.emoji_nature_outlined,
-    ];
-    final labels = [
-      'Fun',
-      'Smart',
-      'Nature',
-    ];
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(3, (i) {
-              final selected = i == _selectedIndex;
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = i;
-                  });
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: selected ? Colors.deepPurple : Colors.grey,
-                      width: selected ? 3 : 1,
-                    ),
-                  ),
-                  child: Icon(
-                    images[i],
-                    size: selected ? 64 : 56,
-                    color: selected ? Colors.deepPurple : Colors.grey,
-                  ),
-                ),
-              );
-            }),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(3, (i) {
-              final selected = i == _selectedIndex;
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 32),
-                child: Text(
-                  labels[i],
-                  style: TextStyle(
-                    fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-                    color: selected ? Colors.deepPurple : Colors.grey,
-                  ),
-                ),
-              );
-            }),
-          ),
-        ],
-      ),
+    return PersonaSelector(
+      selectedIndex: _selectedIndex,
+      onSelect: (i) {
+        setState(() {
+          _selectedIndex = i;
+        });
+      },
     );
   }
 
@@ -164,6 +109,123 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class PersonaIcon extends StatelessWidget {
+  final String? avatarUrl;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const PersonaIcon({
+    super.key,
+    this.avatarUrl,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: selected ? Colors.deepPurple : Colors.grey,
+                width: selected ? 3 : 1,
+              ),
+            ),
+            child: avatarUrl != null && avatarUrl!.isNotEmpty
+                ? CircleAvatar(
+                    radius: selected ? 32 : 28,
+                    backgroundImage: NetworkImage(avatarUrl!),
+                  )
+                : Icon(
+                    Icons.person,
+                    size: selected ? 64 : 56,
+                    color: selected ? Colors.deepPurple : Colors.grey,
+                  ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+            color: selected ? Colors.deepPurple : Colors.grey,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class PersonaSelector extends StatefulWidget {
+  final int selectedIndex;
+  final void Function(int) onSelect;
+
+  const PersonaSelector({
+    super.key,
+    required this.selectedIndex,
+    required this.onSelect,
+  });
+
+  @override
+  State<PersonaSelector> createState() => _PersonaSelectorState();
+}
+
+class _PersonaSelectorState extends State<PersonaSelector> {
+  List<Map<String, dynamic>> _personas = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPersonas();
+  }
+
+  Future<void> _loadPersonas() async {
+    try {
+      final pbService = PocketBaseService();
+      final result = await pbService.pb.collection('personas').getFullList();
+      setState(() {
+        _personas = result.map((r) => r.toJson()).toList();
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() { _loading = false; });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_personas.isEmpty) {
+      return const Center(child: Text('No personas found'));
+    }
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(_personas.length, (i) {
+          final persona = _personas[i];
+          return PersonaIcon(
+            avatarUrl: persona['avatar'],
+            label: persona['name'] ?? '',
+            selected: i == widget.selectedIndex,
+            onTap: () => widget.onSelect(i),
+          );
+        }),
       ),
     );
   }

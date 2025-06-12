@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wyidziomka/pocketbase_service.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -11,8 +12,14 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final List<Map<String, String>> _messages = [];
   final TextEditingController _controller = TextEditingController();
-  final PocketBaseService _pbService = PocketBaseService();
+  late final PocketBaseService _pbService;
   int _selectedIndex = 1; // Default to middle selected
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _pbService = Provider.of<PocketBaseService>(context, listen: false);
+  }
 
   @override
   void initState() {
@@ -25,10 +32,9 @@ class _ChatScreenState extends State<ChatScreen> {
       final msgs = await _pbService.getMessages();
       setState(() {
         _messages.clear();
-        _messages.addAll(msgs.map((m) => {
-          'role': m['role'] ?? '',
-          'text': m['text'] ?? '',
-        }));
+        _messages.addAll(
+          msgs.map((m) => {'role': m['role'] ?? '', 'text': m['text'] ?? ''}),
+        );
       });
     } catch (e) {}
   }
@@ -74,9 +80,14 @@ class _ChatScreenState extends State<ChatScreen> {
                       final msg = _messages[index];
                       final isUser = msg['role'] == 'user';
                       return Align(
-                        alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: isUser
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 4,
+                            horizontal: 8,
+                          ),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: isUser ? Colors.blue[100] : Colors.grey[200],
@@ -202,7 +213,9 @@ class _PersonaSelectorState extends State<PersonaSelector> {
         _loading = false;
       });
     } catch (e) {
-      setState(() { _loading = false; });
+      setState(() {
+        _loading = false;
+      });
     }
   }
 

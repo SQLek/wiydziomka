@@ -10,7 +10,8 @@ void main() {
     Provider<PocketBaseService>(
       create: (_) => PocketBaseService(),
       child: MyApp(),
-    ),);
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -35,7 +36,10 @@ class _MyAppState extends State<MyApp> {
     final token = prefs.getString('pb_auth_token');
     if (token != null && token.isNotEmpty) {
       final pbService = Provider.of<PocketBaseService>(context, listen: false);
-      pbService.pb.authStore.save(token, null); // null for model, you can load user info if needed
+      pbService.pb.authStore.save(
+        token,
+        null,
+      ); // null for model, you can load user info if needed
       setState(() {
         _loggedIn = true;
         _loading = false;
@@ -70,7 +74,9 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: _loggedIn ? const ChatScreen() : LoginScreen(onLoginSuccess: _onLoginSuccess),
+      home: _loggedIn
+          ? const ChatScreen()
+          : LoginScreen(onLoginSuccess: _onLoginSuccess),
     );
   }
 }

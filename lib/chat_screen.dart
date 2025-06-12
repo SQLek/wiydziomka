@@ -228,17 +228,27 @@ class _PersonaSelectorState extends State<PersonaSelector> {
       return const Center(child: Text('No personas found'));
     }
     return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(_personas.length, (i) {
-          final persona = _personas[i];
-          return PersonaIcon(
-            avatarUrl: persona['avatar'],
-            label: persona['name'] ?? '',
-            selected: i == widget.selectedIndex,
-            onTap: () => widget.onSelect(i),
+      child: Consumer<PocketBaseService>(
+        builder: (context, pbService, _) {
+          final baseUrl = pbService.pb.baseUrl;
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(_personas.length, (i) {
+              final persona = _personas[i];
+              String? avatarUrl;
+              if (persona['avatar'] != null && persona['avatar'].isNotEmpty) {
+                avatarUrl =
+                    '$baseUrl/api/files/personas/${persona['id']}/${persona['avatar']}';
+              }
+              return PersonaIcon(
+                avatarUrl: avatarUrl,
+                label: persona['name'] ?? '',
+                selected: i == widget.selectedIndex,
+                onTap: () => widget.onSelect(i),
+              );
+            }),
           );
-        }),
+        },
       ),
     );
   }

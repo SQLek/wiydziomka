@@ -28,6 +28,11 @@ func handleMessage(app core.App, chatId string) {
 		return
 	}
 
+	// Check if messages are empty
+	if len(messages) == 0 {
+		return
+	}
+
 	var messageContent []map[string]string
 
 	for _, message := range messages {
@@ -35,6 +40,11 @@ func handleMessage(app core.App, chatId string) {
 			"role":    message.GetString("role"),
 			"content": message.GetString("text"),
 		})
+	}
+
+	// check if there is only one message with role "system"
+	if len(messageContent) == 1 && messageContent[0]["role"] == "system" {
+		return
 	}
 
 	// Create and configure the HTTP request

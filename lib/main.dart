@@ -5,13 +5,15 @@ import 'package:wyidziomka/login_screen.dart';
 import 'package:wyidziomka/chat_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(
-    Provider<PocketBaseService>(
-      create: (_) => PocketBaseService(),
-      child: MyApp(),
-    ),
-  );
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('pb_auth_token');
+  final pbService = PocketBaseService();
+  if (token != null && token.isNotEmpty) {
+    pbService.pb.authStore.save(token, null);
+  }
+  runApp(Provider<PocketBaseService>.value(value: pbService, child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -32,24 +34,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _checkLoginStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('pb_auth_token');
-    if (token != null && token.isNotEmpty) {
-      final pbService = Provider.of<PocketBaseService>(context, listen: false);
-      pbService.pb.authStore.save(
-        token,
-        null,
-      ); // null for model, you can load user info if needed
-      setState(() {
-        _loggedIn = true;
-        _loading = false;
-      });
-    } else {
-      setState(() {
-        _loggedIn = false;
-        _loading = false;
-      });
-    }
+    final pbService = Provider.of<PocketBaseService>(context, listen: false);
+    setState(() {
+      _loggedIn = pbService.pb.authStore.isValid;
+      _loading = false;
+    });
   }
 
   void _onLoginSuccess() async {

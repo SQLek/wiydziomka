@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wyidziomka/pocketbase_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,19 +13,26 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _pbService = PocketBaseService();
   String? _error;
   bool _loading = false;
 
   Future<void> _login() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
-      await _pbService.login(_emailController.text, _passwordController.text);
+      final pbService = Provider.of<PocketBaseService>(context, listen: false);
+      await pbService.login(_emailController.text, _passwordController.text);
       widget.onLoginSuccess();
     } catch (e) {
-      setState(() { _error = 'Login failed'; });
+      setState(() {
+        _error = 'Login failed';
+      });
     } finally {
-      setState(() { _loading = false; });
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
@@ -53,7 +61,9 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loading ? null : _login,
-              child: _loading ? const CircularProgressIndicator() : const Text('Login'),
+              child: _loading
+                  ? const CircularProgressIndicator()
+                  : const Text('Login'),
             ),
           ],
         ),

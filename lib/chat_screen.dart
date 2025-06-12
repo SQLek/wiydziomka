@@ -206,7 +206,7 @@ class _PersonaSelectorState extends State<PersonaSelector> {
 
   Future<void> _loadPersonas() async {
     try {
-      final pbService = PocketBaseService();
+      final pbService = Provider.of<PocketBaseService>(context, listen: false);
       final result = await pbService.pb.collection('personas').getFullList();
       setState(() {
         _personas = result.map((r) => r.toJson()).toList();

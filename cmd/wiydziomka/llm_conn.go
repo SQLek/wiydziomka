@@ -3,14 +3,14 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"log"
+	"io"
 	"net/http"
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
 
-func handleMessage(app core.App, chatId string) {
+func handleMessage(app core.App, chatId string, collection *core.Collection) *core.Record {
 	messages, err := app.FindRecordsByFilter(
 		"messages",
 		"chat = {:chatId}",
@@ -24,12 +24,12 @@ func handleMessage(app core.App, chatId string) {
 
 	if err != nil {
 		app.Logger().Error("Error finding chat", "error", err)
-		return
+		return nil
 	}
 
 	// Check if messages are empty
 	if len(messages) == 0 {
-		return
+		return nil
 	}
 
 	var messageContent []map[string]string
@@ -43,7 +43,7 @@ func handleMessage(app core.App, chatId string) {
 
 	// check if there is only one message with role "system"
 	if len(messageContent) == 1 && messageContent[0]["role"] == "system" {
-		return
+		return nil
 	}
 
 	// Create and configure the HTTP request
@@ -56,7 +56,6 @@ func handleMessage(app core.App, chatId string) {
 	expandErrors := app.ExpandRecord(chatRecord, []string{"persona", "persona.useWith", "persona.useWith.provider"}, nil)
 	if len(expandErrors) > 0 {
 		app.Logger().Error("Error expanding chat record:", "error", expandErrors)
-		log.Fatal(expandErrors)
 	}
 
 	persona := chatRecord.ExpandedOne("persona")
@@ -77,7 +76,7 @@ func handleMessage(app core.App, chatId string) {
 	jsonData, err := json.Marshal(requestBody)
 	if err != nil {
 		app.Logger().Error("Error creating JSON request", "error", err)
-		return
+		return nil
 	}
 
 	fullUrl := baseUrl + "/chat/completions"
@@ -86,7 +85,7 @@ func handleMessage(app core.App, chatId string) {
 
 	if err != nil {
 		app.Logger().Error("Error creating HTTP request", "error", err)
-		return
+		return nil
 	}
 
 	providerKey := provider.GetString("apiKey")
@@ -98,8 +97,9 @@ func handleMessage(app core.App, chatId string) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		app.Logger().Error("Error making HTTP request", "error", err)
-		return
+		body, _ := io.ReadAll(resp.Body)
+		app.Logger().Error("Error making HTTP request", "error", err, "status code", resp.StatusCode, "body", body)
+		return nil
 	}
 	defer resp.Body.Close()
 
@@ -117,26 +117,19 @@ func handleMessage(app core.App, chatId string) {
 
 	if err := json.NewDecoder(resp.Body).Decode(&openAIResponse); err != nil {
 		app.Logger().Error("Error decoding response", "error", err)
-		return
+		return nil
 	}
 
 	// Check for API error response
 	if openAIResponse.Error.Message != "" {
 		app.Logger().Error("API error", "error", openAIResponse.Error.Message)
-		return
+		return nil
 	}
 
 	// Check if we have any choices
 	if len(openAIResponse.Choices) == 0 {
 		app.Logger().Error("No response from AI")
-		return
-	}
-
-	//create new record
-	collection, err := app.FindCollectionByNameOrId("messages")
-	if err != nil {
-		app.Logger().Error("Error finding collection", "error", err)
-		return
+		return nil
 	}
 
 	record := core.NewRecord(collection)
@@ -144,9 +137,28 @@ func handleMessage(app core.App, chatId string) {
 	record.Set("role", "assistant")
 	record.Set("text", openAIResponse.Choices[0].Message.Content)
 
+	return record
+}
+
+func generateMessage(app core.App, chatId string) {
+
+	//create new record
+	collection, err := app.FindCollectionByNameOrId("messages")
+	if err != nil {
+		app.Logger().Error("Error finding collection", "error", err)
+		return
+	}
+	record := handleMessage(app, chatId, collection)
+
+	if record == nil {
+		record = core.NewRecord(collection)
+		record.Set("chat", chatId)
+		record.Set("role", "error")
+		record.Set("text", "I'm sorry, I'm having trouble generating a message. Please try again later.")
+	}
+
 	err = app.Save(record)
 	if err != nil {
 		app.Logger().Error("Error saving record", "error", err)
-		return
 	}
 }

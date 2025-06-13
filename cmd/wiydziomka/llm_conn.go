@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -24,7 +23,7 @@ func handleMessage(app core.App, chatId string) {
 	)
 
 	if err != nil {
-		fmt.Printf("Error finding chat: %v\n", err)
+		app.Logger().Error("Error finding chat", "error", err)
 		return
 	}
 
@@ -50,12 +49,13 @@ func handleMessage(app core.App, chatId string) {
 	// Create and configure the HTTP request
 	chatRecord, err := app.FindRecordById("chats", chatId)
 	if err != nil {
-		log.Fatal(err)
+		app.Logger().Error("Error finding chat", "error", err)
 	}
 
 	// Expand manually
 	expandErrors := app.ExpandRecord(chatRecord, []string{"persona", "persona.useWith", "persona.useWith.provider"}, nil)
 	if len(expandErrors) > 0 {
+		app.Logger().Error("Error expanding chat record:", "error", expandErrors)
 		log.Fatal(expandErrors)
 	}
 
@@ -76,7 +76,7 @@ func handleMessage(app core.App, chatId string) {
 	// Marshal the request body to JSON
 	jsonData, err := json.Marshal(requestBody)
 	if err != nil {
-		fmt.Printf("Error creating JSON request: %v\n", err)
+		app.Logger().Error("Error creating JSON request", "error", err)
 		return
 	}
 
@@ -85,11 +85,12 @@ func handleMessage(app core.App, chatId string) {
 	req, err := http.NewRequest("POST", fullUrl, bytes.NewBuffer(jsonData))
 
 	if err != nil {
-		fmt.Printf("Error creating request: %v\n", err)
+		app.Logger().Error("Error creating HTTP request", "error", err)
 		return
 	}
 
 	providerKey := provider.GetString("apiKey")
+
 	// Add required headers for OpenAI API compatibility
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+providerKey)
@@ -97,7 +98,7 @@ func handleMessage(app core.App, chatId string) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Printf("Error making request: %v\n", err)
+		app.Logger().Error("Error making HTTP request", "error", err)
 		return
 	}
 	defer resp.Body.Close()
@@ -115,26 +116,26 @@ func handleMessage(app core.App, chatId string) {
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&openAIResponse); err != nil {
-		fmt.Printf("Error decoding response: %v\n", err)
+		app.Logger().Error("Error decoding response", "error", err)
 		return
 	}
 
 	// Check for API error response
 	if openAIResponse.Error.Message != "" {
-		fmt.Printf("API error: %s\n", openAIResponse.Error.Message)
+		app.Logger().Error("API error", "error", openAIResponse.Error.Message)
 		return
 	}
 
 	// Check if we have any choices
 	if len(openAIResponse.Choices) == 0 {
-		fmt.Printf("No response from AI\n")
+		app.Logger().Error("No response from AI")
 		return
 	}
 
 	//create new record
 	collection, err := app.FindCollectionByNameOrId("messages")
 	if err != nil {
-		fmt.Printf("Error finding collection: %v\n", err)
+		app.Logger().Error("Error finding collection", "error", err)
 		return
 	}
 
@@ -145,7 +146,7 @@ func handleMessage(app core.App, chatId string) {
 
 	err = app.Save(record)
 	if err != nil {
-		fmt.Printf("Error saving record: %v\n", err)
+		app.Logger().Error("Error saving record", "error", err)
 		return
 	}
 }

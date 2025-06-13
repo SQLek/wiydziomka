@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wyidziomka/pocketbase_service.dart';
-import 'package:wyidziomka/login_screen.dart';
-import 'package:wyidziomka/chat_screen.dart';
+import 'package:wyidziomka/data/services/pocketbase_service.dart';
+import 'package:wyidziomka/presentation/screens/chat_screen.dart';
+import 'package:wyidziomka/presentation/screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pocketbase/pocketbase.dart';
 

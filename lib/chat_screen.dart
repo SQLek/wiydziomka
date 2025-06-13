@@ -34,7 +34,11 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         _messages.clear();
         _messages.addAll(
-          msgs.map((m) => {'role': m['role'] ?? '', 'text': m['text'] ?? ''}),
+          msgs.map((m) => {
+            'id': m['id'] ?? '',
+            'role': m['role'] ?? '',
+            'text': m['text'] ?? ''
+          }),
         );
       });
     } catch (e) {}
@@ -46,37 +50,47 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // If this is the first message, create a chat first
     if (_messages.isEmpty || _chatId == null) {
-      print('Creating new chat...');
-      // Get the selected persona id
+      // Get the selected persona id and systemPrompt
       final personas = await _pbService.pb.collection('personas').getFullList();
       final personaId = personas[_selectedIndex].get<String>('id');
+      final systemPrompt = personas[_selectedIndex].get<String>('systemPrompt');
       final userId = _pbService.pb.authStore.record?.get<String>('id');
-      final chat = await _pbService.pb.collection('chats').create(body: {
-        'user': userId,
-        'persona': personaId,
-      });
+      final chat = await _pbService.pb
+          .collection('chats')
+          .create(body: {'user': userId, 'persona': personaId});
       _chatId = chat.id;
+
+      // sumbscribe to new messages with same _chatId
+      _pbService.pb.collection('messages').subscribe('*', (event) {
+        final record = event.record;
+        if (record?.get<String>('chat') == _chatId) {
+          setState(() {
+            _messages.add({
+              'role': record?.get<String>('role') ?? '',
+              'text': record?.get<String>('text') ?? '',
+            });
+          });
+        }
+      });
+
+      // Insert system message with systemPrompt
+      if (systemPrompt.isNotEmpty) {
+        await _pbService.pb
+            .collection('messages')
+            .create(
+              body: {'text': systemPrompt, 'role': 'system', 'chat': _chatId},
+            );
+      }
     }
 
     setState(() {
-      _messages.add({'role': 'user', 'text': text});
+      _messages.add({'id': '', 'role': 'user', 'text': text});
     });
-    _controller.clear();
     // Create message with chat relation
-    await _pbService.pb.collection('messages').create(body: {
-      'text': text,
-      'role': 'user',
-      'chat': _chatId,
-    });
-    final aiText = 'Why do you say: "$text"?';
-    setState(() {
-      _messages.add({'role': 'ai', 'text': aiText});
-    });
-    await _pbService.pb.collection('messages').create(body: {
-      'text': aiText,
-      'role': 'assistant',
-      'chat': _chatId,
-    });
+    await _pbService.pb
+        .collection('messages')
+        .create(body: {'text': text, 'role': 'user', 'chat': _chatId});
+    _controller.clear();
   }
 
   Widget _buildSelectionPanel() {
@@ -103,23 +117,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     itemCount: _messages.length,
                     itemBuilder: (context, index) {
                       final msg = _messages[index];
-                      final isUser = msg['role'] == 'user';
-                      return Align(
-                        alignment: isUser
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                            vertical: 4,
-                            horizontal: 8,
-                          ),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: isUser ? Colors.blue[100] : Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(msg['text'] ?? ''),
-                        ),
+                      return ChatMessage(
+                        id: msg['id'] ?? '',
+                        role: msg['role'] ?? '',
+                        text: msg['text'] ?? '',
                       );
                     },
                   ),
@@ -145,6 +146,44 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ChatMessage extends StatelessWidget {
+  final String id;
+  final String role;
+  final String text;
+
+  const ChatMessage({
+    super.key,
+    required this.id,
+    required this.role,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isUser = role == 'user';
+    return Align(
+      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isUser ? Colors.blue[100] : Colors.grey[200],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment:
+              isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            Text(text), // Replace with Markdown widget in the future
+            // Optionally show the id for debugging
+            // Text('id: $id', style: TextStyle(fontSize: 10, color: Colors.grey)),
+          ],
+        ),
       ),
     );
   }

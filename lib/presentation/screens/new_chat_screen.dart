@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:wyidziomka/data/services/pocketbase_service.dart';
 import 'package:wyidziomka/presentation/widgets/message_input.dart';
 import 'package:wyidziomka/presentation/widgets/persona_selector.dart';
+import 'package:wyidziomka/presentation/widgets/responsive_scaffold.dart';
+import 'package:wyidziomka/presentation/widgets/app_drawer.dart';
 
 class NewChatScreen extends StatefulWidget {
   const NewChatScreen({super.key});
@@ -39,7 +41,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ResponsiveScaffold(
       appBar: AppBar(title: const Text('New Chat')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -61,6 +63,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
             ),
         ],
       ),
+      drawerContent: const AppDrawer(),
     );
   }
 }

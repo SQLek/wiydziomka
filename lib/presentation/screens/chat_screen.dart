@@ -4,6 +4,8 @@ import 'package:wyidziomka/data/models/chat_model.dart';
 import 'package:wyidziomka/data/services/pocketbase_service.dart';
 import 'package:wyidziomka/presentation/widgets/message_input.dart';
 import 'package:wyidziomka/presentation/widgets/message_list.dart';
+import 'package:wyidziomka/presentation/widgets/responsive_scaffold.dart';
+import 'package:wyidziomka/presentation/widgets/app_drawer.dart';
 
 class ChatScreen extends StatelessWidget {
   final ChatModel chat;
@@ -25,7 +27,7 @@ class ChatScreen extends StatelessWidget {
       controller.clear();
     }
 
-    return Scaffold(
+    return ResponsiveScaffold(
       appBar: AppBar(title: const Text('Chat')),
       body: Column(
         children: [
@@ -41,6 +43,7 @@ class ChatScreen extends StatelessWidget {
           ),
         ],
       ),
+      drawerContent: const AppDrawer(),
     );
   }
 }

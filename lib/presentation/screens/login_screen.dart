@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wyidziomka/data/services/pocketbase_service.dart';
+import 'package:wyidziomka/data/services/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
-  final void Function() onLoginSuccess;
-  const LoginScreen({super.key, required this.onLoginSuccess});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final pbService = Provider.of<PocketBaseService>(context, listen: false);
       await pbService.login(_emailController.text, _passwordController.text);
-      widget.onLoginSuccess();
+      Provider.of<AuthProvider>(context, listen: false).onLoginSuccess();
     } catch (e) {
       setState(() {
         _error = 'Login failed';

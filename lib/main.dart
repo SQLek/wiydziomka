@@ -3,8 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pocketbase/pocketbase.dart';
-import '../presentation/widgets/chat_drawer.dart';
+import 'package:wyidziomka/data/models/chat_model.dart';
+import 'package:wyidziomka/presentation/screens/chat_screen.dart';
+import 'package:wyidziomka/presentation/screens/chats_screen.dart';
+import 'package:wyidziomka/presentation/screens/login_screen.dart';
+import 'package:wyidziomka/presentation/screens/new_chat_screen.dart';
 import 'data/services/pocketbase_service.dart';
+import 'data/services/auth_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +26,10 @@ void main() async {
   runApp(
     Provider<PocketBaseService>(
       create: (_) => pbService,
-      child: MyApp(),
+      child: ChangeNotifierProvider<AuthProvider>(
+        create: (context) => AuthProvider(pbService),
+        child: MyApp(),
+      ),
     ),
   );
 }
@@ -29,75 +37,65 @@ void main() async {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  final GoRouter _router = GoRouter(
-    routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => RouteScreen(route: '/'),
-      ),
-      GoRoute(
-        path: '/chats',
-        builder: (context, state) => RouteScreen(route: '/chats'),
-      ),
-      GoRoute(
-        path: '/chat/:id',
-        builder: (context, state) => RouteScreen(
-          route: '/chat/${state.pathParameters['id']}',
-        ),
-      ),
-      GoRoute(
-        path: '/chat-new',
-        builder: (context, state) => RouteScreen(route: '/chat-new'),
-      ),
-    ],
-  );
+  static Widget _buildChatScreen(BuildContext context, GoRouterState state) {
+    final chatId = state.pathParameters['id'];
+    if (chatId == null) {
+      return const Center(child: Text('Chat ID not provided'));
+    }
+
+    final pbService = Provider.of<PocketBaseService>(context, listen: false);
+    return FutureBuilder<ChatModel>(
+            future: pbService.getChat(chatId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(body: Center(child: CircularProgressIndicator()));
+              }
+              if (snapshot.hasError) {
+                return Scaffold(body: Center(child: Text('Error loading chat: \\${snapshot.error}')));
+              }
+              if (!snapshot.hasData) {
+                return const Scaffold(body: Center(child: Text('Chat not found')));
+              }
+              return ChatScreen(chat: snapshot.data!);
+            },
+          );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final GoRouter router = GoRouter(
+      refreshListenable: authProvider,
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => NewChatScreen(),
+        ),
+        GoRoute(
+          path: '/chats',
+          builder: (context, state) => ChatsScreen(),
+        ),
+        GoRoute(
+          path: '/chat/:id',
+          builder: _buildChatScreen,
+        ),
+        GoRoute(
+          path: '/login',
+          builder: (context, state) => LoginScreen(),
+        ),
+      ],
+      redirect: (context, state) {
+        final loggedIn = authProvider.loggedIn;
+        final loggingIn = state.fullPath == '/login';
+        if (!loggedIn && !loggingIn) return '/login';
+        if (loggedIn && loggingIn) return '/';
+        return null;
+      },
+    );
     return MaterialApp.router(
-      routerConfig: _router,
+      routerConfig: router,
       title: 'GoRouter Example',
       theme: ThemeData(primarySwatch: Colors.blue),
-    );
-  }
-}
-
-class RouteScreen extends StatelessWidget {
-  final String route;
-  const RouteScreen({super.key, required this.route});
-
-  @override
-  Widget build(BuildContext context) {
-    // Example chat list
-    final chats = ['123', '456', '789'];
-    return Scaffold(
-      appBar: AppBar(title: Text('Current Route')),
-      drawer: ChatDrawer(chats: chats),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('You are on: $route', style: TextStyle(fontSize: 24)),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () => context.go('/'),
-              child: const Text('Go to /'),
-            ),
-            ElevatedButton(
-              onPressed: () => context.go('/chats'),
-              child: const Text('Go to /chats'),
-            ),
-            ElevatedButton(
-              onPressed: () => context.go('/chat/123'),
-              child: const Text('Go to /chat/123'),
-            ),
-            ElevatedButton(
-              onPressed: () => context.go('/chat-new'),
-              child: const Text('Go to /chat-new'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

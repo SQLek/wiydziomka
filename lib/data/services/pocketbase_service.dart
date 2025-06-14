@@ -30,9 +30,20 @@ class PocketBaseService {
     }
   }
 
-  Future<void> createMessage(String text, String role) async {
+  Future<void> createMessage({
+    required String text,
+    required String role,
+    required String chatId,
+    bool? isThinking,
+  }) async {
+    final body = {
+      'text': text,
+      'role': role,
+      'chat': chatId,
+      if (isThinking != null) 'isThinking': isThinking,
+    };
     try {
-      await pb.collection('messages').create(body: {'text': text, 'role': role});
+      await pb.collection('messages').create(body: body);
     } catch (e) {
       // Optionally, add logging here
       rethrow;

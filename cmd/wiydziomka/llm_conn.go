@@ -2,16 +2,18 @@ package main
 
 import (
 	"bytes"
-	"cmp"
 	"encoding/json"
 	"io"
 	"net/http"
+	"slices"
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
 
-func handleMessage(app core.App, chatId string, collection *core.Collection) *core.Record {
+var validRoles = []string{"user", "assistant", "system", "tool"}
+
+func handleMessage(app core.App, chatId string, collection *core.Collection, isThinking bool) *core.Record {
 	messages, err := app.FindRecordsByFilter(
 		"messages",
 		"chat = {:chatId}",
@@ -36,6 +38,12 @@ func handleMessage(app core.App, chatId string, collection *core.Collection) *co
 	var messageContent []map[string]string
 
 	for _, message := range messages {
+		role := message.GetString("role")
+		if !slices.Contains(validRoles, role) {
+			// Skip messages with invalid roles
+			// for example 'error'
+			continue
+		}
 		messageContent = append(messageContent, map[string]string{
 			"role":    message.GetString("role"),
 			"content": message.GetString("text"),
@@ -62,10 +70,12 @@ func handleMessage(app core.App, chatId string, collection *core.Collection) *co
 		app.Logger().Error("Error expanding chat record:", "error", expandErrors)
 	}
 
-	model := cmp.Or(
-		chatRecord.ExpandedOne("preferredModel"),
-		chatRecord.ExpandedOne("thinkingModel"),
-	)
+	model := chatRecord.ExpandedOne("thinkingModel")
+	if notThinking := chatRecord.ExpandedOne("preferredModel"); notThinking != nil && !isThinking {
+		// if not thinking model is set, and user does not want to think, use it
+		// otherwise use thinking model
+		model = notThinking
+	}
 	provider := model.ExpandedOne("provider")
 	baseUrl := provider.GetString("baseUrl")
 	// Prepare the request body according to OpenAI API format
@@ -100,8 +110,12 @@ func handleMessage(app core.App, chatId string, collection *core.Collection) *co
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		app.Logger().Error("Error making HTTP request", "error", err)
+		return nil
+	}
+	if c := resp.StatusCode; c < 200 || c >= 300 {
 		body, _ := io.ReadAll(resp.Body)
-		app.Logger().Error("Error making HTTP request", "error", err, "status code", resp.StatusCode, "body", body)
+		app.Logger().Error("Error making HTTP request", "status code", c, "body", body)
 		return nil
 	}
 	defer resp.Body.Close()
@@ -143,7 +157,7 @@ func handleMessage(app core.App, chatId string, collection *core.Collection) *co
 	return record
 }
 
-func generateMessage(app core.App, chatId string) {
+func generateMessage(app core.App, chatId string, isThinking bool) {
 
 	//create new record
 	collection, err := app.FindCollectionByNameOrId("messages")
@@ -151,7 +165,7 @@ func generateMessage(app core.App, chatId string) {
 		app.Logger().Error("Error finding collection", "error", err)
 		return
 	}
-	record := handleMessage(app, chatId, collection)
+	record := handleMessage(app, chatId, collection, isThinking)
 
 	if record == nil {
 		record = core.NewRecord(collection)

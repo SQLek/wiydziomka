@@ -25,8 +25,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _pbService = Provider.of<PocketBaseService>(context, listen: false);
   }
 
-  void _sendMessage() async {
-    final text = _controller.text.trim();
+  void _handleSend(bool isThinking, String text) async {
     if (text.isEmpty) return;
 
     if (_activeChat == null) {
@@ -42,9 +41,12 @@ class _ChatScreenState extends State<ChatScreen> {
       // Optionally, call a callback to notify parent about active chat
     }
 
-    await _pbService.pb
-        .collection('messages')
-        .create(body: {'text': text, 'role': 'user', 'chat': _activeChat!.id});
+    await _pbService.createMessage(
+      text: text,
+      role: 'user',
+      chatId: _activeChat!.id,
+      isThinking: isThinking,
+    );
     _controller.clear();
   }
 
@@ -64,7 +66,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: MessageInput(
                     controller: _controller,
-                    onSend: _sendMessage,
+                    onSend: _handleSend,
                     hintText: 'Type your first message...',
                   ),
                 ),
@@ -79,7 +81,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: MessageInput(
                     controller: _controller,
-                    onSend: _sendMessage,
+                    onSend: _handleSend,
                   ),
                 ),
               ],

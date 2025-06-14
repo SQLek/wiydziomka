@@ -9,20 +9,21 @@ func init() {
 	// Supported personas slice
 	defaults := []struct {
 		Name         string
+		IsPublic     bool
 		SystemPrompt string
 	}{
-		{"Joyful",
+		{"Joyful", true,
 			`You're an joyful and helpful assistant.
 			Respond concise and truthfully.
 			You may use some feline behaviors.
 			Your physical form is of magical book.
 			Respond in same language as user.`},
-		{"Balanced",
+		{"Balanced", true,
 			`You're an helpful and truthful assistant.
 			Answer specifically and get straight to the point, without beating around the bush.
 			Your physical form is of a book. You may also use bear characteristics.
 			Respond in same language as user.`},
-		{"Formal",
+		{"Formal", true,
 			`You're an helpful and truthful assistant.
 			Respond briefly, concisely, and in the same language as the user.
 			Your physical form is a technologically advanced book.
@@ -37,6 +38,7 @@ func init() {
 		for _, d := range defaults {
 			rec := core.NewRecord(collection)
 			rec.Set("name", d.Name)
+			rec.Set("isPublic", d.IsPublic)
 			rec.Set("systemPrompt", d.SystemPrompt)
 			if err := app.Save(rec); err != nil {
 				return err

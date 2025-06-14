@@ -1,6 +1,10 @@
 package main
 
-import "github.com/pocketbase/pocketbase/core"
+import (
+	"encoding/json"
+
+	"github.com/pocketbase/pocketbase/core"
+)
 
 func hookMessageCreate(e *core.RecordRequestEvent) error {
 
@@ -9,7 +13,12 @@ func hookMessageCreate(e *core.RecordRequestEvent) error {
 		return err
 	}
 
-	go generateMessage(e.App, e.Record.GetString("chat"))
+	var body struct {
+		IsThinking bool `json:"isThinking"`
+	}
+	json.NewDecoder(e.RequestEvent.Request.Body).Decode(&body)
+
+	go generateMessage(e.App, e.Record.GetString("chat"), body.IsThinking)
 
 	return nil
 }

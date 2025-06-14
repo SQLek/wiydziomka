@@ -163,4 +163,19 @@ class PocketBaseService {
     }
     return false;
   }
+
+  /// Fetches the latest chats, limited by [limit].
+  Future<List<ChatModel>> getLatestChats({int limit = 5}) async {
+    final result = await pb.collection('chats').getList(page: 1, perPage: limit, sort: '-created');
+    return result.items.map((r) {
+      final name = r.get<String?>('name');
+      final created = r.get<String>('created');
+      return ChatModel(
+        id: r.get<String>('id'),
+        name: name == null || name.isEmpty ? 'Unnamed $created' : name,
+        preferredModelId: r.get<String?>('preferredModel'),
+        thinkingModelId: r.get<String?>('thinkingModel'),
+      );
+    }).toList();
+  }
 }

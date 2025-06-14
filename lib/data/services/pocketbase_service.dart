@@ -1,6 +1,7 @@
 import 'package:pocketbase/pocketbase.dart';
 import 'package:wyidziomka/data/models/message_model.dart';
 import 'package:wyidziomka/data/models/persona_model.dart';
+import 'package:wyidziomka/data/models/model_model.dart';
 
 class PocketBaseService {
   late final PocketBase pb;
@@ -44,5 +45,23 @@ class PocketBaseService {
         avatar: avatarUrl,
       );
     }).toList();
+  }
+
+  Future<List<ModelModel>> getModels({bool? isThinking, bool? isPreferred}) async {
+    final filters = <String>[];
+    if (isThinking != null) {
+      filters.add('isThinking = ${isThinking ? "true" : "false"}');
+    }
+    if (isPreferred != null) {
+      filters.add('isPreferred = ${isPreferred ? "true" : "false"}');
+    }
+    // Filter for active provider relation
+    filters.add('provider.isActive = true');
+    final filterString = filters.join(' && ');
+    final result = await pb.collection('models').getFullList(
+      filter: filterString.isNotEmpty ? filterString : null,
+      expand: 'provider',
+    );
+    return result.map((r) => ModelModel.fromRecord(r)).toList();
   }
 }

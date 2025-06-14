@@ -2,6 +2,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:wyidziomka/data/models/message_model.dart';
 import 'package:wyidziomka/data/models/persona_model.dart';
 import 'package:wyidziomka/data/models/model_model.dart';
+import 'package:wyidziomka/data/models/chat_model.dart';
 
 class PocketBaseService {
   late final PocketBase pb;
@@ -63,5 +64,21 @@ class PocketBaseService {
       expand: 'provider',
     );
     return result.map((r) => ModelModel.fromRecord(r)).toList();
+  }
+
+  Future<ChatModel> createChat({
+    required String personaId,
+    String? preferredModelId,
+    String? thinkingModelId,
+  }) async {
+    final userId = pb.authStore.record?.id;
+    final body = {
+      'persona': personaId,
+      'user': userId,
+      if (preferredModelId != null) 'preferredModel': preferredModelId,
+      if (thinkingModelId != null) 'thinkingModel': thinkingModelId,
+    };
+    final record = await pb.collection('chats').create(body: body);
+    return ChatModel.fromRecord(record);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wyidziomka/data/models/chat_model.dart';
 import 'package:wyidziomka/data/models/message_model.dart';
 import 'package:wyidziomka/data/services/pocketbase_service.dart';
 import 'package:wyidziomka/presentation/widgets/message_list.dart';
@@ -15,37 +16,38 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   late final PocketBaseService _pbService;
-  int _selectedIndex = 0;
-  String? _chatId;
   late final Stream<List<MessageModel>> _messageStream;
+  final GlobalKey<PersonaSelectorState> _personaSelectorKey = GlobalKey<PersonaSelectorState>();
+  ChatModel? _activeChat;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _pbService = Provider.of<PocketBaseService>(context, listen: false);
     _messageStream = Stream.periodic(const Duration(seconds: 1))
-        .asyncMap((_) => _chatId != null ? _pbService.getMessages() : Future.value([]));
+        .asyncMap((_) => _activeChat != null ? _pbService.getMessages() : Future.value([]));
   }
 
   void _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
-    if (_chatId == null) {
-      // Get personas and create chat
-      final personas = await _pbService.getPersonas();
-      final persona = personas[_selectedIndex];
-      final userId = _pbService.pb.authStore.record?.get<String>('id');
-      final chat = await _pbService.pb
-          .collection('chats')
-          .create(body: {'user': userId, 'persona': persona.id});
-      _chatId = chat.id;
-      // Optionally send system prompt if you have it
+    if (_activeChat == null) {
+      final personaSelectorState = _personaSelectorKey.currentState;
+      if (personaSelectorState == null) {
+        throw Exception('Invalid state');
+      }
+
+      final chat = await personaSelectorState.createChat();
+      setState(() {
+        _activeChat = chat;
+      });
+      // Optionally, call a callback to notify parent about active chat
     }
 
     await _pbService.pb
         .collection('messages')
-        .create(body: {'text': text, 'role': 'user', 'chat': _chatId});
+        .create(body: {'text': text, 'role': 'user', 'chat': _activeChat!.id});
     _controller.clear();
   }
 
@@ -53,18 +55,13 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Chat')),
-      body: _chatId == null
+      body: _activeChat == null
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 32),
                 PersonaSelector(
-                  selectedIndex: _selectedIndex,
-                  onSelect: (i) {
-                    setState(() {
-                      _selectedIndex = i;
-                    });
-                  },
+                  key: _personaSelectorKey,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),

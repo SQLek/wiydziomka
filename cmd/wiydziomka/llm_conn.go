@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"cmp"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -53,20 +54,22 @@ func handleMessage(app core.App, chatId string, collection *core.Collection) *co
 	}
 
 	// Expand manually
-	expandErrors := app.ExpandRecord(chatRecord, []string{"persona", "persona.useWith", "persona.useWith.provider"}, nil)
+	expandErrors := app.ExpandRecord(chatRecord, []string{"chats",
+		"preferredModel", "preferredModel.provider",
+		"thinkingModel", "thinkingModel.provider",
+	}, nil)
 	if len(expandErrors) > 0 {
 		app.Logger().Error("Error expanding chat record:", "error", expandErrors)
 	}
 
-	persona := chatRecord.ExpandedOne("persona")
-	models := persona.ExpandedAll("useWith")
-	// TODO search isPreferred = true
-	// TODO if not found, search isDefault = true
-	model := models[0]
+	model := cmp.Or(
+		chatRecord.ExpandedOne("preferredModel"),
+		chatRecord.ExpandedOne("thinkingModel"),
+	)
 	provider := model.ExpandedOne("provider")
 	baseUrl := provider.GetString("baseUrl")
 	// Prepare the request body according to OpenAI API format
-	requestBody := map[string]interface{}{
+	requestBody := map[string]any{
 		"model":    model.GetString("ident"),
 		"stream":   false,
 		"messages": messageContent,

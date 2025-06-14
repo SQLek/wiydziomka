@@ -2,30 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wyidziomka/data/models/persona_model.dart';
 import 'package:wyidziomka/data/models/model_model.dart';
+import 'package:wyidziomka/data/models/chat_model.dart';
 import 'package:wyidziomka/data/services/pocketbase_service.dart';
 import 'package:wyidziomka/presentation/widgets/persona_icon.dart';
 
 class PersonaSelector extends StatefulWidget {
-  final int selectedIndex;
-  final void Function(int) onSelect;
-
-  const PersonaSelector({
-    super.key,
-    required this.selectedIndex,
-    required this.onSelect,
-  });
+  const PersonaSelector({super.key});
 
   @override
-  State<PersonaSelector> createState() => _PersonaSelectorState();
+  State<PersonaSelector> createState() => PersonaSelectorState();
 }
 
-class _PersonaSelectorState extends State<PersonaSelector> {
+class PersonaSelectorState extends State<PersonaSelector> {
   List<PersonaModel> _personas = [];
   List<ModelModel> _preferredModels = [];
   List<ModelModel> _thinkingModels = [];
   bool _loading = true;
   int? _selectedPreferredIndex;
   int? _selectedThinkingIndex;
+  int _selectedPersonaIndex = 0;
 
   @override
   void initState() {
@@ -95,6 +90,29 @@ class _PersonaSelectorState extends State<PersonaSelector> {
     );
   }
 
+  Future<ChatModel> createChat() async {
+    if (_personas.isEmpty || _selectedPersonaIndex >= _personas.length) {
+      throw Exception('Invalid state');
+    }
+    final persona = _personas[_selectedPersonaIndex];
+    String? preferredModelId;
+    String? thinkingModelId;
+    if (_preferredModels.isNotEmpty && _selectedPreferredIndex != null) {
+      preferredModelId = _preferredModels[_selectedPreferredIndex!].id;
+    }
+    if (_thinkingModels.isNotEmpty && _selectedThinkingIndex != null) {
+      thinkingModelId = _thinkingModels[_selectedThinkingIndex!].id;
+    }
+
+    final pbService = Provider.of<PocketBaseService>(context, listen: false);
+    final chat = await pbService.createChat(
+      personaId: persona.id,
+      preferredModelId: preferredModelId,
+      thinkingModelId: thinkingModelId,
+    );
+    return chat;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_loading) {
@@ -113,8 +131,8 @@ class _PersonaSelectorState extends State<PersonaSelector> {
               final persona = _personas[i];
               return PersonaIcon(
                 persona: persona,
-                selected: i == widget.selectedIndex,
-                onTap: () => widget.onSelect(i),
+                selected: i == _selectedPersonaIndex,
+                onTap: () => setState(() => _selectedPersonaIndex = i),
               );
             }),
           ),

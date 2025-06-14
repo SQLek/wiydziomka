@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"slices"
@@ -13,7 +14,7 @@ import (
 
 var validRoles = []string{"user", "assistant", "system", "tool"}
 
-func handleMessage(app core.App, chatId string, collection *core.Collection, isThinking bool) *core.Record {
+func handleMessage(app core.App, chatId string, collection *core.Collection, isThinking bool) (*core.Record, error) {
 	messages, err := app.FindRecordsByFilter(
 		"messages",
 		"chat = {:chatId}",
@@ -27,12 +28,12 @@ func handleMessage(app core.App, chatId string, collection *core.Collection, isT
 
 	if err != nil {
 		app.Logger().Error("Error finding chat", "error", err)
-		return nil
+		return nil, err
 	}
 
 	// Check if messages are empty
 	if len(messages) == 0 {
-		return nil
+		return nil, nil
 	}
 
 	var messageContent []map[string]string
@@ -52,13 +53,14 @@ func handleMessage(app core.App, chatId string, collection *core.Collection, isT
 
 	// check if there is only one message with role "system"
 	if len(messageContent) == 1 && messageContent[0]["role"] == "system" {
-		return nil
+		return nil, nil
 	}
 
 	// Create and configure the HTTP request
 	chatRecord, err := app.FindRecordById("chats", chatId)
 	if err != nil {
 		app.Logger().Error("Error finding chat", "error", err)
+		return nil, err
 	}
 
 	// Expand manually
@@ -68,6 +70,7 @@ func handleMessage(app core.App, chatId string, collection *core.Collection, isT
 	}, nil)
 	if len(expandErrors) > 0 {
 		app.Logger().Error("Error expanding chat record:", "error", expandErrors)
+		return nil, fmt.Errorf("error expanding chat record: %v", expandErrors)
 	}
 
 	model := chatRecord.ExpandedOne("thinkingModel")
@@ -89,7 +92,7 @@ func handleMessage(app core.App, chatId string, collection *core.Collection, isT
 	jsonData, err := json.Marshal(requestBody)
 	if err != nil {
 		app.Logger().Error("Error creating JSON request", "error", err)
-		return nil
+		return nil, err
 	}
 
 	fullUrl := baseUrl + "/chat/completions"
@@ -98,7 +101,7 @@ func handleMessage(app core.App, chatId string, collection *core.Collection, isT
 
 	if err != nil {
 		app.Logger().Error("Error creating HTTP request", "error", err)
-		return nil
+		return nil, err
 	}
 
 	providerKey := provider.GetString("apiKey")
@@ -111,12 +114,12 @@ func handleMessage(app core.App, chatId string, collection *core.Collection, isT
 	resp, err := client.Do(req)
 	if err != nil {
 		app.Logger().Error("Error making HTTP request", "error", err)
-		return nil
+		return nil, err
 	}
 	if c := resp.StatusCode; c < 200 || c >= 300 {
 		body, _ := io.ReadAll(resp.Body)
 		app.Logger().Error("Error making HTTP request", "status code", c, "body", body)
-		return nil
+		return nil, fmt.Errorf("error making HTTP request: %v", body)
 	}
 	defer resp.Body.Close()
 
@@ -134,19 +137,19 @@ func handleMessage(app core.App, chatId string, collection *core.Collection, isT
 
 	if err := json.NewDecoder(resp.Body).Decode(&openAIResponse); err != nil {
 		app.Logger().Error("Error decoding response", "error", err)
-		return nil
+		return nil, err
 	}
 
 	// Check for API error response
 	if openAIResponse.Error.Message != "" {
 		app.Logger().Error("API error", "error", openAIResponse.Error.Message)
-		return nil
+		return nil, fmt.Errorf("API error: %v", openAIResponse.Error.Message)
 	}
 
 	// Check if we have any choices
 	if len(openAIResponse.Choices) == 0 {
 		app.Logger().Error("No response from AI")
-		return nil
+		return nil, fmt.Errorf("no response from AI")
 	}
 
 	record := core.NewRecord(collection)
@@ -154,7 +157,7 @@ func handleMessage(app core.App, chatId string, collection *core.Collection, isT
 	record.Set("role", "assistant")
 	record.Set("text", openAIResponse.Choices[0].Message.Content)
 
-	return record
+	return record, nil
 }
 
 func generateMessage(app core.App, chatId string, isThinking bool) {
@@ -165,7 +168,10 @@ func generateMessage(app core.App, chatId string, isThinking bool) {
 		app.Logger().Error("Error finding collection", "error", err)
 		return
 	}
-	record := handleMessage(app, chatId, collection, isThinking)
+	record, err := handleMessage(app, chatId, collection, isThinking)
+	if err == nil && record == nil {
+		// system prompt only, no response
+	}
 
 	if record == nil {
 		record = core.NewRecord(collection)

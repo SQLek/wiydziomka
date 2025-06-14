@@ -63,29 +63,29 @@ class PersonaSelectorState extends State<PersonaSelector> {
     }
   }
 
-  Widget _buildModelDropdown(List<ModelModel> models, int? selectedIndex, void Function(int?) onChanged, String hint) {
+  Widget _buildModelDropdown(
+    List<ModelModel> models,
+    int? selectedIndex,
+    void Function(int?) onChanged,
+    String hint,
+  ) {
     if (models.isEmpty) {
       return Text('no models avaliable - check pocketbase');
     }
     if (models.length == 1) {
       return DropdownButton<int>(
         value: 0,
-        items: [
-          DropdownMenuItem<int>(
-            value: 0,
-            child: Text(models[0].name),
-          ),
-        ],
+        items: [DropdownMenuItem<int>(value: 0, child: Text(models[0].name))],
         onChanged: null,
       );
     }
     return DropdownButton<int>(
       value: selectedIndex,
       hint: Text(hint),
-      items: List.generate(models.length, (i) => DropdownMenuItem<int>(
-        value: i,
-        child: Text(models[i].name),
-      )),
+      items: List.generate(
+        models.length,
+        (i) => DropdownMenuItem<int>(value: i, child: Text(models[i].name)),
+      ),
       onChanged: onChanged,
     );
   }
@@ -110,6 +110,15 @@ class PersonaSelectorState extends State<PersonaSelector> {
       preferredModelId: preferredModelId,
       thinkingModelId: thinkingModelId,
     );
+
+    // here use persona.systemPrompt and create initial message
+    await pbService.createMessage(
+      text: persona.systemPrompt,
+      role: 'system',
+      chatId: chat.id,
+      isThinking: false,
+    );
+
     return chat;
   }
 

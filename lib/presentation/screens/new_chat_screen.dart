@@ -5,6 +5,7 @@ import 'package:wyidziomka/presentation/widgets/message_input.dart';
 import 'package:wyidziomka/presentation/widgets/persona_selector.dart';
 import 'package:wyidziomka/presentation/widgets/responsive_scaffold.dart';
 import 'package:wyidziomka/presentation/widgets/app_drawer.dart';
+import 'package:go_router/go_router.dart';
 
 class NewChatScreen extends StatefulWidget {
   const NewChatScreen({super.key});
@@ -35,7 +36,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
     );
     setState(() { _creating = false; });
     if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/chat/${chat.id}');
+      GoRouter.of(context).go('/chat/${chat.id}');
     }
   }
 

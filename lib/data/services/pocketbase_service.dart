@@ -23,10 +23,11 @@ class PocketBaseService {
     if (chatId != null) {
       final result = await pb.collection('messages').getFullList(
         filter: 'chat = "$chatId"',
+        sort: 'created',
       );
       return result.map((r) => MessageModel.fromRecord(r)).toList();
     } else {
-      final result = await pb.collection('messages').getFullList();
+      final result = await pb.collection('messages').getFullList(sort: '-created');
       return result.map((r) => MessageModel.fromRecord(r)).toList();
     }
   }
@@ -64,6 +65,7 @@ class PocketBaseService {
         id: record.get<String>('id'),
         name: record.get<String>('name'),
         avatar: avatarUrl,
+        systemPrompt: record.get<String>('systemPrompt'),
       );
     }).toList();
   }

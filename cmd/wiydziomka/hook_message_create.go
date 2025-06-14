@@ -9,7 +9,7 @@ func hookMessageCreate(e *core.RecordRequestEvent) error {
 		return err
 	}
 
-	go handleMessage(e.App, e.Record.GetString("chat"))
+	go generateMessage(e.App, e.Record.GetString("chat"))
 
 	return nil
 }

@@ -53,19 +53,6 @@ func init() {
 					"type": "editor"
 				},
 				{
-					"cascadeDelete": false,
-					"collectionId": "pbc_3552922951",
-					"hidden": false,
-					"id": "relation3871225228",
-					"maxSelect": 999,
-					"minSelect": 0,
-					"name": "useWith",
-					"presentable": false,
-					"required": false,
-					"system": false,
-					"type": "relation"
-				},
-				{
 					"hidden": false,
 					"id": "autodate2990389176",
 					"name": "created",

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:wyidziomka/data/models/message_model.dart';
 import 'package:wyidziomka/data/models/persona_model.dart';
@@ -17,9 +18,16 @@ class PocketBaseService {
     pb = PocketBase(url, authStore: authStore);
   }
 
-  Future<List<MessageModel>> getMessages() async {
-    final result = await pb.collection('messages').getFullList();
-    return result.map((r) => MessageModel.fromRecord(r)).toList();
+  Future<List<MessageModel>> getMessages({String? chatId}) async {
+    if (chatId != null) {
+      final result = await pb.collection('messages').getFullList(
+        filter: 'chat = "$chatId"',
+      );
+      return result.map((r) => MessageModel.fromRecord(r)).toList();
+    } else {
+      final result = await pb.collection('messages').getFullList();
+      return result.map((r) => MessageModel.fromRecord(r)).toList();
+    }
   }
 
   Future<void> createMessage(String text, String role) async {
@@ -80,5 +88,41 @@ class PocketBaseService {
     };
     final record = await pb.collection('chats').create(body: body);
     return ChatModel.fromRecord(record);
+  }
+
+  /// Subscribe to messages for a chat using PocketBase realtime API.
+  /// Returns a stream of MessageModel for new/updated messages in the chat.
+  Future<Stream<MessageModel>> subscribeMessages(String chatId) async {
+    final controller = StreamController<MessageModel>();
+    late final Future<void> unsubFuture;
+    unsubFuture = pb.collection('messages').subscribe('*', (e) {
+      final record = e.record;
+      if (record != null && (e.action == 'create' || e.action == 'update')) {
+        if (record.get<String>('chat') == chatId) {
+          controller.add(MessageModel.fromRecord(record));
+        }
+      }
+    });
+    controller.onCancel = () {
+      unsubFuture;
+    };
+    // Optionally, fetch initial messages if needed
+    return controller.stream;
+  }
+
+  Future<Stream<MessageModel>> subscribeMessagesRealtime(String chatId) async {
+    final controller = StreamController<MessageModel>();
+    final unsubFuture = pb.collection('messages').subscribe('*', (e) {
+      final record = e.record;
+      if (record != null && (e.action == 'create' || e.action == 'update')) {
+        if (record.get<String>('chat') == chatId) {
+          controller.add(MessageModel.fromRecord(record));
+        }
+      }
+    });
+    controller.onCancel = () {
+      unsubFuture;
+    };
+    return controller.stream;
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wyidziomka/data/models/chat_model.dart';
-import 'package:wyidziomka/data/models/message_model.dart';
 import 'package:wyidziomka/data/services/pocketbase_service.dart';
 import 'package:wyidziomka/presentation/widgets/message_list.dart';
 import 'package:wyidziomka/presentation/widgets/persona_selector.dart';
@@ -16,7 +15,6 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   late final PocketBaseService _pbService;
-  late final Stream<List<MessageModel>> _messageStream;
   final GlobalKey<PersonaSelectorState> _personaSelectorKey = GlobalKey<PersonaSelectorState>();
   ChatModel? _activeChat;
 
@@ -24,8 +22,6 @@ class _ChatScreenState extends State<ChatScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _pbService = Provider.of<PocketBaseService>(context, listen: false);
-    _messageStream = Stream.periodic(const Duration(seconds: 1))
-        .asyncMap((_) => _activeChat != null ? _pbService.getMessages() : Future.value([]));
   }
 
   void _sendMessage() async {
@@ -85,7 +81,7 @@ class _ChatScreenState extends State<ChatScreen> {
           : Column(
               children: [
                 Expanded(
-                  child: MessageList(messageStream: _messageStream),
+                  child: MessageList(chat: _activeChat!),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),

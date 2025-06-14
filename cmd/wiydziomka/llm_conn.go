@@ -64,7 +64,7 @@ func handleMessage(app core.App, chatId string, collection *core.Collection, isT
 	}
 
 	// Expand manually
-	expandErrors := app.ExpandRecord(chatRecord, []string{"chats",
+	expandErrors := app.ExpandRecord(chatRecord, []string{
 		"preferredModel", "preferredModel.provider",
 		"thinkingModel", "thinkingModel.provider",
 	}, nil)
@@ -171,6 +171,7 @@ func generateMessage(app core.App, chatId string, isThinking bool) {
 	record, err := handleMessage(app, chatId, collection, isThinking)
 	if err == nil && record == nil {
 		// system prompt only, no response
+		return
 	}
 
 	if record == nil {

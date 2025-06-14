@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wyidziomka/app/config/theme.dart';
+import 'package:wyidziomka/app/routing/app_router.dart';
 import 'package:wyidziomka/data/services/pocketbase_service.dart';
-import 'package:wyidziomka/presentation/screens/chat_screen.dart';
-import 'package:wyidziomka/presentation/screens/login_screen.dart';
+import 'package:wyidziomka/data/services/auth_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -17,76 +18,40 @@ void main() async {
 
   final pbService = PocketBaseService(authStore: store);
 
-  // Try to restore user record if token is valid
-  if (pbService.pb.authStore.isValid) {
-    try {
-      final userId = pbService.pb.authStore.model.id;
-      if (userId != null) {
-        final userRecord = await pbService.pb
-            .collection('users')
-            .getOne(userId);
-        final token = pbService.pb.authStore.token;
-        pbService.pb.authStore.save(token, userRecord);
-      }
-    } catch (e) {
-      pbService.pb.authStore.clear();
-      await prefs.remove('pb_auth');
-    }
-  }
+  // Restore user record if token is valid
+  await pbService.restoreAuth(prefs);
 
-  runApp(Provider<PocketBaseService>.value(value: pbService, child: MyApp()));
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<PocketBaseService>.value(value: pbService),
+        ChangeNotifierProvider<AuthProvider>(
+          create: (_) => AuthProvider(pbService),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  bool _loggedIn = false;
-  bool _loading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkLoginStatus();
-  }
-
-  Future<void> _checkLoginStatus() async {
-    final pbService = Provider.of<PocketBaseService>(context, listen: false);
-    setState(() {
-      _loggedIn = pbService.pb.authStore.isValid;
-      _loading = false;
-    });
-  }
-
-  void _onLoginSuccess() async {
-    final pbService = Provider.of<PocketBaseService>(context, listen: false);
-    final token = pbService.pb.authStore.token;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('pb_auth_token', token);
-    setState(() {
-      _loggedIn = true;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (_loading) {
+    final auth = Provider.of<AuthProvider>(context);
+    if (auth.loading) {
       return const MaterialApp(
         home: Scaffold(body: Center(child: CircularProgressIndicator())),
       );
     }
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: _loggedIn
-          ? const ChatScreen()
-          : LoginScreen(onLoginSuccess: _onLoginSuccess),
+      title: 'Wiydziomka',
+      theme: appTheme,
+      initialRoute: auth.loggedIn ? '/chats' : '/login',
+      onGenerateRoute: (settings) => AppRouter.generateRoute(settings, () async {
+        await auth.onLoginSuccess();
+      }),
     );
   }
 }

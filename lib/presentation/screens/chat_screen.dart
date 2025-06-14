@@ -7,7 +7,8 @@ import 'package:wyidziomka/presentation/widgets/message_list.dart';
 import 'package:wyidziomka/presentation/widgets/persona_selector.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String? chatId;
+  const ChatScreen({super.key, this.chatId});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -23,6 +24,15 @@ class _ChatScreenState extends State<ChatScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _pbService = Provider.of<PocketBaseService>(context, listen: false);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.chatId != null) {
+      // Optionally, fetch chat by id and set _activeChat
+      // For now, just set a placeholder or leave null for empty chat
+    }
   }
 
   void _handleSend(bool isThinking, String text) async {

@@ -4,6 +4,7 @@ import 'package:wyidziomka/data/models/message_model.dart';
 import 'package:wyidziomka/data/models/persona_model.dart';
 import 'package:wyidziomka/data/models/model_model.dart';
 import 'package:wyidziomka/data/models/chat_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PocketBaseService {
   late final PocketBase pb;
@@ -135,5 +136,26 @@ class PocketBaseService {
       unsubFuture;
     };
     return controller.stream;
+  }
+
+  /// Restores the user record if the auth token is valid.
+  /// Returns true if restored, false if not.
+  Future<bool> restoreAuth(SharedPreferences prefs) async {
+    if (pb.authStore.isValid) {
+      try {
+        final userId = pb.authStore.model.id;
+        if (userId != null) {
+          final userRecord = await pb.collection('users').getOne(userId);
+          final token = pb.authStore.token;
+          pb.authStore.save(token, userRecord);
+        }
+        return true;
+      } catch (e) {
+        pb.authStore.clear();
+        await prefs.remove('pb_auth');
+        return false;
+      }
+    }
+    return false;
   }
 }

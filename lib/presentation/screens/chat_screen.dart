@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wyidziomka/data/models/chat_model.dart';
 import 'package:wyidziomka/data/services/pocketbase_service.dart';
+import 'package:wyidziomka/presentation/widgets/message_input.dart';
 import 'package:wyidziomka/presentation/widgets/message_list.dart';
 import 'package:wyidziomka/presentation/widgets/persona_selector.dart';
 
@@ -61,19 +62,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _controller,
-                          decoration: const InputDecoration(hintText: 'Type your first message...'),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.send),
-                        onPressed: _sendMessage,
-                      ),
-                    ],
+                  child: MessageInput(
+                    controller: _controller,
+                    onSend: _sendMessage,
+                    hintText: 'Type your first message...',
                   ),
                 ),
               ],
@@ -85,19 +77,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _controller,
-                          decoration: const InputDecoration(hintText: 'Type a message...'),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.send),
-                        onPressed: _sendMessage,
-                      ),
-                    ],
+                  child: MessageInput(
+                    controller: _controller,
+                    onSend: _sendMessage,
                   ),
                 ),
               ],

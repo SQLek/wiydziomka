@@ -102,6 +102,11 @@ class PocketBaseService {
     return ChatModel.fromRecord(record);
   }
 
+  Future<ChatModel> getChat(String chatId) async {
+    final record = await pb.collection('chats').getOne(chatId);
+    return ChatModel.fromRecord(record);
+  }
+
   /// Subscribe to messages for a chat using PocketBase realtime API.
   /// Returns a stream of MessageModel for new/updated messages in the chat.
   Future<Stream<MessageModel>> subscribeMessages(String chatId) async {

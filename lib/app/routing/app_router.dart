@@ -4,6 +4,7 @@ import 'package:wyidziomka/presentation/screens/login_screen.dart';
 import 'package:wyidziomka/presentation/screens/chats_screen.dart';
 import 'package:wyidziomka/presentation/screens/chat_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:wyidziomka/data/models/chat_model.dart';
 
 class AppRouter {
   static Route<dynamic>? generateRoute(RouteSettings settings, VoidCallback onLoginSuccess) {
@@ -26,8 +27,8 @@ class AppRouter {
             return const Scaffold(body: Center(child: Text('No chat id provided')));
           }
           final pbService = Provider.of<PocketBaseService>(context, listen: false);
-          return FutureBuilder(
-            future: pbService.pb.collection('chats').getOne(chatId),
+          return FutureBuilder<ChatModel>(
+            future: pbService.getChat(chatId),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -38,8 +39,7 @@ class AppRouter {
               if (!snapshot.hasData) {
                 return const Scaffold(body: Center(child: Text('Chat not found')));
               }
-              // Optionally, convert snapshot.data to ChatModel if needed
-              return ChatScreen(chatId: chatId);
+              return ChatScreen(chat: snapshot.data!);
             },
           );
         },

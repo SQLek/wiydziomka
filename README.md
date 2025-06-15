@@ -1,67 +1,108 @@
 # Wiydziomka
 
-Small scale LLM chating service.
-Something to bridge the gap between `I'm doing everything manualy and localy`
-and `IaaS inteligence as a service`.
-No need for PhD in k8s and serverless cloud.
-It is an entry for [T3.chat cloneathon](https://cloneathon.t3.chat/)
+A small-scale LLM chatting service.  
+Something to bridge the gap between _“I'm doing everything manually and locally”_  
+and _“IaaS – intelligence as a service”_.
 
-Hero of this project is a **[PocketBase](https://cloneathon.t3.chat/)**. Its like a firebase but in one executable.
-Extend with JS/TS/GoLang you still can ship single executable.
+No need for a PhD or engineering degree in Kubernetes and serverless cloud.
+
+It is an entry for the [T3.chat cloneathon](https://cloneathon.t3.chat/)
+
+None of this would be possible without **[PocketBase](https://pocketbase.io/)** –  
+it's like Firebase, but in a single executable.  
+Extend it with JS, TS, or Go – and still ship it all in one binary.
 
 ## Installation
 
- - ~~Download executable from releses and double click~~... soon™
+ - ~~Download executable from releases and double click~~... soon™
  - ~~Docker pull~~... soon™
  - ~~Flatpack/Snap/winget~~... soon™
- - ~~Wiydziomka Cloud~~... nowhere near ready. Bilings, payments, seciurity, privacy. We prefear to stay smal scale for now.
- - From sources
+ - ~~Wiydziomka Cloud~~... Nowhere near ready — billing, payments, security, and privacy are still missing. We prefer to stay small-scale for now.
+ - **From sources**
 
-Ensure You have [Go language](https://go.dev/dl/)
+Make sure you have [Golang](https://go.dev/dl/)
 and [Flutter](https://docs.flutter.dev/get-started/install) installed.
-Clone and enter directory with terminal of Your choosing.
 
 ```shell
+git clone https://github.com/SQLek/wiydziomka.git
 flutter build web
 go build ./cmd/wiydziomka
 ```
 
-Above will generate single executable.
+Commands above will clone this repo and compile executable.
 
 ## Usage & maintanance
 
-First execution will generate OTP link to set up a superuser.
-You can always upsert another superuser from console.
-
+First start will generate OTP link to set up a superuser.
 ```shell
 wiydziomka serve
+```
+You can always add another superuser from console.
+
+```shell
 wiydziomka superuser upsert EMAIL PASS
 ```
 
-**Word of precaution**. Data store, named `pb_store` is generated
+#### A word of caution:
+Data store, named `pb_store` is generated
 in ***same location as executable***, no mater of working directory.
+
 You can use `--dev` to have verbose output and `--dir <location>`
 to change store placement.
 
--- adding users
+## Adding users, models, providers:
+Enter pocketbase panel
+```
+http://127.0.0.1:8090/_/
+```
 
--- enabling providers
+#### adding user:
+- Go to the `users` and click **+New record**
+- enter `email` used as login, `password` (and confirm it)
+- enable `verifed`
+- enter name and optionally add your avatar
+- Click **Create**
 
--- adding other models
+#### enabling provider:
+- go to `providers` and edit existing one
+- enable `isActive` 
+- add your `apiKey` 
+- **Save changes**
+
+#### adding new provider:
+- Make sure your provider supports OpenAI-style JSON requests (`/chat/completions` is appended automatically)
+- go to providers and click **+New record**
+- enter provider `name`
+- enter `baseUrl `
+- enter your `apiKey`
+- enable `isActive`
+- if your provider is an local LLM enable `isLocal`
+- **Create**
+
+#### adding new models:
+- go to 1models1 and click **+New record**
+- Select a `provider` using the **Open picker** button
+- enter `name` of your model
+- enter `ident` (this is the provider’s API model name – check their docs)
+- Optionally enable:
+   - `isPreferred` (sets this model as default)
+   - `isThinking` (marks it as a “thinking” model)
+- **Create**
 
 ## Room full of 🐘
 
-Every project, especialy on tight shedule borns lots of elephants, and other quirks. Such project can give some eurekas, but let's dive into zoology matters first.
+Every project – especially one built on a tight schedule – births a few elephants (and other quirks).
+You might get a few eurekas, but let’s deal with the zoology first.
 
-### Where support for apple?
+### Where’s the Apple Support?
 
-How naive and stupid we were.
-Just add some flags in github action, or `flutter build ios` right?
+Oh, how naive we were.
+"Just add some flags in GitHub Actions" or `flutter build ios`, right?
 
-> You guys can just tap executable on Yout phone and run it right?
+> You guys can just tap the executable on your phone or macbook and run it, right?
 
-Suporting apple without having apple or someone with apple,
-was one of the reasons for chosing flutter...
+Supporting Apple without owning Apple products (or knowing someone who does) was one of the reasons we chose Flutter in the first place...
+At the very least, you should be able to compile it from source on your MacBook 🙃
 
 ### Flutter, Your dart into knee
 

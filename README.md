@@ -172,7 +172,9 @@ You'll have hard time to catch up.
 Compete on fetures that You need,
 and is notexistant elsewhere.
 
+## Future plans
 
+// WIP
 
 ## 
 // nie potrzebujesz świecidełek które wszystkie innerozwiazania mają

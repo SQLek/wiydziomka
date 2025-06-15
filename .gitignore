@@ -47,3 +47,5 @@ app.*.map.json
 # golang and pocketbase related
 __debug_bin*
 pb_data
+/wiydziomka
+/wiydziomka.exe

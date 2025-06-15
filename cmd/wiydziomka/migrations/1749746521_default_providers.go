@@ -16,7 +16,7 @@ func init() {
 		{"Groq", "https://api.groq.com/openai/v1", false},
 		{"Open Router", "https://openrouter.ai/api/v1", false},
 		{"Ollama", "http://localhost:11435/v1", true},
-		{"LM Studio", "http://localhost:8080/v1", true},
+		{"LM Studio", "http://localhost:1234/v1", true},
 	}
 
 	m.Register(func(app core.App) error {

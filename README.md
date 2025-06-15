@@ -66,7 +66,7 @@ was one of the reasons for chosing flutter...
 ### Flutter, Your dart into knee
 
 Our team is mainly backend.
-Having already experience with vibe coding,
+Having already experiences with vibe coding,
 we know that LLM just love corner themself
 into architecture without good refactor strategy.
 
@@ -74,18 +74,15 @@ In go it is not a big problem, no harm in deperacted `ioutil`
 or naked `done <-chan struct{}`. We can guide away from worst footguns.
 The more deperacted and irrelevant baggage, the more cornering into halucination.
 
-In `2 + 2 - 2 = 20` language we'll go blind.
-Frameworks like react have imense baggage.
-I still remember components made by class objects thingy.
-Last time when I had contact with react,
-graphQl was the only correct way to do api.
-I even saw jQuery inside useState,
-and I don't want to know in what halucination we could end up.
-
 Event in flutter we cornered our self into inability to add routing,
 but it was managable to escape without full rewrite.
 
-Moving forward we consider Svelte or Vue or even react native if we discover how to made linux desktop from it.
+In retrospective, our beloved to be hated language would be fine.
+Maybe LLM cannot come with good arhitecture,
+but can critique `Your` code all day long.
+
+Moving forward we consider Svelte or Vue or even react native,
+if we discover how to made linux desktop from it.
 
 ### No streaming response?
 
@@ -96,31 +93,47 @@ or A770 16G without problems.
 
 ### Everything throu backend?
 
-I would like to support chromebook.
-Adding MCPs, buisnes logic or agentic code would be problematic.
 Provisioning apikeys to front is an interesting idea,
-that we have no experience with.
-One endpoint `/chat/completions` is all You need,
-and virtualy all providers have it.
+worth investigating further.
+Maybe [goja](https://github.com/dop251/goja) to have shared logic
+across backend & frontdend.
 
-Having more offline capability would be nice,
-but I'm not doing any substancial login in `2 + 2 - 2 = 20` language.
-It is even posible to ship golang logic as wasm service worker,
-and run inference on webgpu?
+Or maybe webgpu and run inference on edge...
 
 ### Lots of elephants, but where this original one?
 
-Why not PHP? Laravel+Inerrtia was on the table,
-allegedly now experience is very good.
-Last our experience with Laravel but AdminLTE was not so good.
+Why not PHP? Laravel+Inerrtia was on the table.
+I heard developer experience is very good now.
 
 The same we could tall about others `Why nox ...?`.
 Zig, htmx, rust, alpine.js, templ.
 Lots of promising and interesting options.
 No time to evaluate, not willing to risk not shiping.
 
-## Eurekas of project?
+## Eurekas of this project?
 
+❤️ **[PocketBase](https://pocketbase.io/)** ❤️
+Doing SPA with it was a breaze. Everything handled with minimal complexity.
+Propably not good option for SSR.
+
+Vibe critiq. Maybe LLM cannot use good architecture when writing code,
+but it is very useful to critique `your` code.
+Ability to discus if i should use provider, model or just _state was a godsend.
+
+You don't need bels and whistles! I'm already using this project,
+for tasks that I would normaly use gemini pro.
+There is a model on **Qroq** that have web search connected,
+named `compound-beta`, and by looks of it,
+I'll shring my subscription list.
+
+Don't compete on features that other get right,
+You'll have hard time to catch up.
+Compete on fetures that You need,
+and is notexistant elsewhere.
+
+
+
+## 
 // nie potrzebujesz świecidełek które wszystkie innerozwiazania mają
 
 // można skoncentrować się na tym co konkurencji robią źle, niż próbować ich prześcignąć w tym co robiadobrze.
@@ -129,7 +142,7 @@ No time to evaluate, not willing to risk not shiping.
 
 ## Last words
 
-We aimed for `minimal plan`, just finish even on last place is success.
+We aimed for `minimal plan`, just finish, even on last place is success.
 In extremale case of wining any prize, we prefear to give up it to charity,
 of Theo choosing.
 

@@ -116,16 +116,6 @@ In hindsight, our worries were overstated — but Flutter itself wasn't very ple
 
 Moving forward, we’re considering Svelte or Vue.
 
-In Go, it’s not a big problem. No harm in deprecated `ioutil` or a naked `done <-chan struct{}`.  
-We can usually guide the model away from the worst footguns.  
-The more deprecated or irrelevant baggage, the more likely it is to hallucinate itself into a corner with nonexistent libraries and functions.
-
-Even in Flutter, we managed to corner ourselves — this time into an inability to add routing.  
-But it was manageable to escape without a full rewrite.
-
-Moving forward, we’re considering Svelte, Vue, or even React Native —  
-if we can figure out how to make a Linux desktop build from it. 🙂
-
 ### No streaming response?
 
 Groq is fast enough that even reasoning models feel almost instantaneous.  

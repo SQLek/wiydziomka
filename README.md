@@ -151,18 +151,16 @@ Building an SPA with it was a breeze — everything handled with minimal complex
 Probably not the best option for SSR, though.
 
 #### Vibe Critique
-Maybe LLMs can’t come up with great architecture, 
-but they’re excellent at critiquing _your_ code.
-
-Still, the ability to discuss whether I should use a provider, model, or just _state_ was a godsend.
+Maybe LLMs can’t come up with great architecture, but they’re excellent at critiquing "your" code.  
+The ability to discuss whether to use a provider, model, or just plain state was incredibly helpful.
 
 #### You don't need bels and whistles! 
-'m already using this project for tasks I’d normally run through Gemini Pro.  
+I'm already using this project for tasks I’d normally run through Gemini Pro.  
 There’s a model on **Groq** with web search integration,  
 called `compound-beta`, and it looks promising.
 
 Don’t compete on features others already got right — you’ll have a hard time catching up.  
-Compete on features **you** actually need — especially the ones that are nonexistent elsewhere.
+Implement features **you** actually need — especially the ones that are nonexistent elsewhere.
 
 ## Future Plans:
 
@@ -172,7 +170,7 @@ Groq has a nice feature in its developer console:
 Studio Mode, which allows easy experimenting with system prompts,  
 context messages, and A/B testing of different models.
 
-o persistence and manual copy-pasting required.  
+No persistence and manual copy-pasting required.  
 Adding persistence in Wiydziomka will enable us  
 to deliver a much better Studio Mode experience.
 

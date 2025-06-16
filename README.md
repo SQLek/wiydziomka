@@ -111,113 +111,113 @@ At the very least, you should be able to compile it from source on your MacBook 
 Our team is mainly backend.  
 With plenty of "vibe coding" experience, we knew LLMs love to paint themselves into architectural corners — especially when there’s no solid refactoring strategy.
 
-In go it is not a big problem, no harm in deperacted `ioutil`
-or naked `done <-chan struct{}`. We can guide away from worst footguns.
-The more deperacted and irrelevant baggage, the more cornering into halucination.
+In Go, it’s not a big problem. No harm in deprecated `ioutil` or a naked `done <-chan struct{}`.  
+We can usually guide the model away from the worst footguns.  
+The more deprecated or irrelevant baggage, the more likely it is to hallucinate itself into a corner with nonexistent libraries and functions.
 
 Even in Flutter, we managed to corner ourselves — this time into an inability to add routing.  
 But it was manageable to escape without a full rewrite.
 
-In retrospective, our beloved to be hated language would be fine.
-Maybe LLM cannot come with good arhitecture,
-but can critique `Your` code all day long.
-
 Moving forward, we’re considering Svelte, Vue, or even React Native —  
-if we figure out how to make a Linux desktop build from it. 🙂
+if we can figure out how to make a Linux desktop build from it. 🙂
 
 ### No streaming response?
 
-Groq is fast enough that even reasoning models are almost instantionous.
-For ollama, 6900xt that we have in systems is snappy enough to not complain.
-Propably someone could go with Lm-Studio and use gpu as low as GTX 1080ti,
-or A770 16G without problems.
+Groq is fast enough that even reasoning models feel almost instantaneous.  
+For Ollama, the RX 6900 XT we have in our system is snappy enough not to complain.  
+Probably someone could use LM Studio and get away with a GPU as low as a GTX 1080 Ti,  
+or even an Intel A770 16G — without major issues.
 
-### Everything throu backend?
+### Everything Through the Backend?
 
-Provisioning apikeys to front is an interesting idea,
-worth investigating further.
-Maybe [goja](https://github.com/dop251/goja) to have shared logic
-across backend & frontdend.
+Provisioning API keys to the frontend is an interesting idea —  
+definitely worth investigating further.  
+Maybe something like [Goja](https://github.com/dop251/goja) could help share logic  
+between the backend and frontend?
 
-Or maybe webgpu and run inference on edge...
+Or maybe WebGPU — and run inference directly on the edge...
 
-### Lots of elephants, but where this original one?
+### Lots of Elephants — But Where's the Original One?
 
-Why not PHP? Laravel+Inerrtia was on the table.
-I heard developer experience is very good now.
+Why not PHP? Laravel + Inertia was on the table.  
+I've heard the developer experience is actually very good nowadays.
 
-The same we could tall about others `Why not ...?`.
-Zig, htmx, rust, alpine.js, templ.
-Lots of promising and interesting options.
-No time to evaluate, not willing to risk not shiping.
+And the same could be said for many other techs:  
+**Why not...** Zig? htmx? Rust? Alpine.js? Templ?
 
-## Eurekas of this project?
+So many promising and interesting options.  
+But no time to evaluate — and not willing to risk **not shipping**.
 
-❤️ **[PocketBase](https://pocketbase.io/)** ❤️
-Doing SPA with it was a breaze. Everything handled with minimal complexity.
-Propably not good option for SSR.
+### Eurekas from This Project
 
-Vibe critiq. Maybe LLM cannot use good architecture when writing code,
-but it is very useful to critique `your` code.
-Ability to discus if I should use provider, model or just _state was a godsend.
+❤️ **[PocketBase](https://pocketbase.io/)** ❤️  
+Building an SPA with it was a breeze — everything handled with minimal complexity.  
+Probably not the best option for SSR, though.
 
-You don't need bels and whistles! I'm already using this project,
-for tasks that I would normaly use gemini pro.
-There is a model on **Qroq** that have web search connected,
-named `compound-beta`, and it looks promising.
+#### Vibe Critique
+Maybe LLMs can’t come up with great architecture, 
+but they’re excellent at critiquing _your_ code.
 
-Don't compete on features that other get right,
-You'll have hard time to catch up.
-Compete on fetures that You need,
-and is notexistant elsewhere.
+Still, the ability to discuss whether I should use a provider, model, or just _state_ was a godsend.
 
-## Future plans
+#### You don't need bels and whistles! 
+'m already using this project for tasks I’d normally run through Gemini Pro.  
+There’s a model on **Groq** with web search integration,  
+called `compound-beta`, and it looks promising.
 
-### Studio mode
+Don’t compete on features others already got right —  
+you’ll have a hard time catching up.  
+Compete on features **you** actually need —  
+especially the ones that are nonexistent elsewhere.
 
-Groq have nice feature in developer console.
-Studio mode that allows easy experimenting with system prompts,
-context messages and A/B testing different models.
+## Future Plans:
 
-No persistancy and manual copy-pasting.
-Having persistancy in Wiydziomka enabling us
-to deliver much better studio mode.
+### Studio Mode
 
-### Exposing tools to user
+Groq has a nice feature in its developer console:  
+Studio Mode, which allows easy experimenting with system prompts,  
+context messages, and A/B testing of different models.
 
-There is no user interface that exposes MSPs or tools.
-This is not a feature that end user would benefit from.
-Power user, content creator and domain expert would benefit greatly.
+o persistence and manual copy-pasting required.  
+Adding persistence in Wiydziomka will enable us  
+to deliver a much better Studio Mode experience.
 
-### Embedings and RAGs
+### Exposing Tools to Users
 
-In perfect world, AI system would learn and grow interacting with own user.
-Actualy long term memory and user context is hiden at best, not existant in most cases.
+There is currently no user interface exposing MSPs or tools.  
+This isn’t a feature that benefits the average end user,  
+but power users, content creators, and domain experts  
+would benefit greatly from it.
 
-As a stop gap we can expose embeding database and rags to user.
-Closest thing that exist is a coding agent that asks if can perform an action in terminal.
+### Embeddings and RAGs
 
-We humans are bad ad describing ourself.
-User alergic to penats? Dislike `2 + 2 - 2 = 20` language? Don't have car?
-It's posible to iteratively get system prompt good enough,
-but it is hard and very manual.
+In a perfect world, an AI system would learn and grow by interacting with its own user.  
+Actually, long-term memory and user context are hidden at best, and nonexistent in most cases.
 
-We propably can use LLM itself to close the loop,
-but it have to be supervised.
-Preferably by te user, without introducing to much friction.
+As a stopgap, we can expose the embedding database and RAGs to the user.  
+The closest thing that exists is a coding agent that asks for permission before performing an action in the terminal.
+
+We humans are bad at describing ourselves.  
+User allergic to peanuts? Dislikes `2 + 2 - 2 = 20` language? Don’t have a car?  
+It’s possible to iteratively get the system prompt good enough,  
+but it’s hard and very manual.
+
+We probably can use the LLM itself to close the loop,  
+but it has to be supervised —  
+preferably by the user, without introducing too much friction.
 
 ## Last words
 
-We aimed for `minimal plan`, just finish, even on last place is success.
-In extremale case of wining any prize, we prefear to give up it to charity,
-of Theo choosing.
+We aimed for a **minimal plan** — just to finish. Even coming in last place is a success.  
+In the unlikely event of winning any prize, we prefer to donate it to charity,  
+chosen by Theo.
 
-We would like charity be involved in one of bellow.
+We would like the charity to be involved in one of the following areas:
 
- - Spreading knowlage
- - Digital exclusion
- - Repairability
+- Spreading knowledge  
+- Digital inclusion  
+- Repairability  
 
-Thank You for spending time with us.
-We would love to hear more from You.
-Maybe use issuses tab?
+Thank you for spending time with us.  
+We would love to hear more from you.  
+Maybe use the issues tab?

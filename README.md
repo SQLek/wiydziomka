@@ -108,8 +108,13 @@ At the very least, you should be able to compile it from source on your MacBook 
 
 ### Flutter – Your Dart to the Knee
 
-Our team is mainly backend.  
-With plenty of "vibe coding" experience, we knew LLMs love to paint themselves into architectural corners — especially when there’s no solid refactoring strategy.
+Our team is mainly backend, without much frontend intuition.  
+We were worried that no amount of vibe coding would help us navigate the modern JavaScript landscape — with all its glory and years of accumulated baggage.
+
+We believed Flutter's constrained ecosystem would be easier for us and the LLM to navigate.  
+In hindsight, our worries were overstated — but Flutter itself wasn't very pleasant for building web applications.
+
+Moving forward, we’re considering Svelte or Vue.
 
 In Go, it’s not a big problem. No harm in deprecated `ioutil` or a naked `done <-chan struct{}`.  
 We can usually guide the model away from the worst footguns.  
@@ -127,15 +132,6 @@ Groq is fast enough that even reasoning models feel almost instantaneous.
 For Ollama, the RX 6900 XT we have in our system is snappy enough not to complain.  
 Probably someone could use LM Studio and get away with a GPU as low as a GTX 1080 Ti,  
 or even an Intel A770 16G — without major issues.
-
-### Everything Through the Backend?
-
-Provisioning API keys to the frontend is an interesting idea —  
-definitely worth investigating further.  
-Maybe something like [Goja](https://github.com/dop251/goja) could help share logic  
-between the backend and frontend?
-
-Or maybe WebGPU — and run inference directly on the edge...
 
 ### Lots of Elephants — But Where's the Original One?
 
@@ -189,20 +185,11 @@ would benefit greatly from it.
 
 ### Embeddings and RAGs
 
-In a perfect world, an AI system would learn and grow by interacting with its own user.  
-Actually, long-term memory and user context are hidden at best, and nonexistent in most cases.
+Discussion branching relies on remembering and finding past conversations to branch from.  
+Maybe some vector indexing could help — suggesting to the user that certain messages from the past can be "resurrected"?
 
-As a stopgap, we can expose the embedding database and RAGs to the user.  
-The closest thing that exists is a coding agent that asks for permission before performing an action in the terminal.
-
-We humans are bad at describing ourselves.  
-User allergic to peanuts? Dislikes `2 + 2 - 2 = 20` language? Don’t have a car?  
-It’s possible to iteratively get the system prompt good enough,  
-but it’s hard and very manual.
-
-We probably can use the LLM itself to close the loop,  
-but it has to be supervised —  
-preferably by the user, without introducing too much friction.
+Or maybe just grouping chats would be enough?  
+That could be a simpler system to operate, but it’s still a long way off.
 
 ## Last words
 

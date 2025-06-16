@@ -168,8 +168,7 @@ Ability to discus if I should use provider, model or just _state was a godsend.
 You don't need bels and whistles! I'm already using this project,
 for tasks that I would normaly use gemini pro.
 There is a model on **Qroq** that have web search connected,
-named `compound-beta`, and by looks of it,
-I'll shring my subscription list.
+named `compound-beta`, and it looks promising.
 
 Don't compete on features that other get right,
 You'll have hard time to catch up.
@@ -178,14 +177,38 @@ and is notexistant elsewhere.
 
 ## Future plans
 
-// WIP
+### Studio mode
 
-## 
-// nie potrzebujesz świecidełek które wszystkie innerozwiazania mają
+Groq have nice feature in developer console.
+Studio mode that allows easy experimenting with system prompts,
+context messages and A/B testing different models.
 
-// można skoncentrować się na tym co konkurencji robią źle, niż próbować ich prześcignąć w tym co robiadobrze.
+No persistancy and manual copy-pasting.
+Having persistancy in Wiydziomka enabling us
+to deliver much better studio mode.
 
-// pocketbase jest mega zajebisty, kaliber pracy i funkcjonalności które dostaliśmy na starcie za free, przeogromna. szczególnie w go który jest jawny do bólu.
+### Exposing tools to user
+
+There is no user interface that exposes MSPs or tools.
+This is not a feature that end user would benefit from.
+Power user, content creator and domain expert would benefit greatly.
+
+### Embedings and RAGs
+
+In perfect world, AI system would learn and grow interacting with own user.
+Actualy long term memory and user context is hiden at best, not existant in most cases.
+
+As a stop gap we can expose embeding database and rags to user.
+Closest thing that exist is a coding agent that asks if can perform an action in terminal.
+
+We humans are bad ad describing ourself.
+User alergic to penats? Dislike `2 + 2 - 2 = 20` language? Don't have car?
+It's posible to iteratively get system prompt good enough,
+but it is hard and very manual.
+
+We propably can use LLM itself to close the loop,
+but it have to be supervised.
+Preferably by te user, without introducing to much friction.
 
 ## Last words
 

@@ -115,6 +115,10 @@ In go it is not a big problem, no harm in deperacted `ioutil`
 or naked `done <-chan struct{}`. We can guide away from worst footguns.
 The more deperacted and irrelevant baggage, the more cornering into halucination.
 
+We were not comfortable to risk react.
+Decision was betwen some modern JS framework and flutter.
+So many times we wished to have standard DOM tree.
+
 Event in flutter we cornered our self into inability to add routing,
 but it was managable to escape without full rewrite.
 
@@ -122,8 +126,8 @@ In retrospective, our beloved to be hated language would be fine.
 Maybe LLM cannot come with good arhitecture,
 but can critique `Your` code all day long.
 
-Moving forward we consider Svelte or Vue or even react native,
-if we discover how to made linux desktop from it.
+Moving forward we consider Svelte or Vue.
+If only react native supported qt and gtk...
 
 ### No streaming response?
 
@@ -146,7 +150,7 @@ Or maybe webgpu and run inference on edge...
 Why not PHP? Laravel+Inerrtia was on the table.
 I heard developer experience is very good now.
 
-The same we could tall about others `Why nox ...?`.
+The same we could tall about others `Why not ...?`.
 Zig, htmx, rust, alpine.js, templ.
 Lots of promising and interesting options.
 No time to evaluate, not willing to risk not shiping.
@@ -159,7 +163,7 @@ Propably not good option for SSR.
 
 Vibe critiq. Maybe LLM cannot use good architecture when writing code,
 but it is very useful to critique `your` code.
-Ability to discus if i should use provider, model or just _state was a godsend.
+Ability to discus if I should use provider, model or just _state was a godsend.
 
 You don't need bels and whistles! I'm already using this project,
 for tasks that I would normaly use gemini pro.

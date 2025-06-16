@@ -1,3 +1,4 @@
+[![License](https://img.shields.io/github/license/SQLek/wiydziomka)](./LICENSE)
 # Wiydziomka
 
 A small-scale LLM chatting service.  
@@ -80,7 +81,7 @@ http://127.0.0.1:8090/_/
 - **Create**
 
 #### adding new models:
-- go to 1models1 and click **+New record**
+- go to `models` and click **+New record**
 - Select a `provider` using the **Open picker** button
 - enter `name` of your model
 - enter `ident` (this is the provider’s API model name – check their docs)
@@ -104,26 +105,24 @@ Oh, how naive we were.
 Supporting Apple without owning Apple products (or knowing someone who does) was one of the reasons we chose Flutter in the first place...
 At the very least, you should be able to compile it from source on your MacBook 🙃
 
-### Flutter, Your dart into knee
 
-Our team is mainly backend.
-Having already experiences with vibe coding,
-we know that LLM just love corner themself
-into architecture without good refactor strategy.
+### Flutter – Your Dart to the Knee
 
-In go it is not a big problem, no harm in deperacted `ioutil`
-or naked `done <-chan struct{}`. We can guide away from worst footguns.
-The more deperacted and irrelevant baggage, the more cornering into halucination.
+Our team is mainly backend.  
+With plenty of "vibe coding" experience, we knew LLMs love to paint themselves into architectural corners — especially when there’s no solid refactoring strategy.
 
-Event in flutter we cornered our self into inability to add routing,
-but it was managable to escape without full rewrite.
+In Go, that's usually not a big deal. Deprecated `ioutil`? Naked `done <-chan struct{}`? No problem.  
+We can nudge it away from the worst footguns.  
+The more irrelevant or deprecated baggage, the more likely an LLM is to hallucinate itself into a corner.
 
-In retrospective, our beloved to be hated language would be fine.
-Maybe LLM cannot come with good arhitecture,
-but can critique `Your` code all day long.
+Even in Flutter, we managed to corner ourselves — this time into an inability to add routing.  
+But it was manageable to escape without a full rewrite.
 
-Moving forward we consider Svelte or Vue or even react native,
-if we discover how to made linux desktop from it.
+In hindsight, our beloved-to-be-hated language would have been fine.  
+LLMs may not design great architectures, but they sure love critiquing _your_ code all day long.
+
+Moving forward, we’re considering Svelte, Vue, or even React Native —  
+if we figure out how to make a Linux desktop build from it. 🙂
 
 ### No streaming response?
 

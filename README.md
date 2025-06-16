@@ -111,15 +111,16 @@ At the very least, you should be able to compile it from source on your MacBook 
 Our team is mainly backend.  
 With plenty of "vibe coding" experience, we knew LLMs love to paint themselves into architectural corners — especially when there’s no solid refactoring strategy.
 
-In Go, that's usually not a big deal. Deprecated `ioutil`? Naked `done <-chan struct{}`? No problem.  
-We can nudge it away from the worst footguns.  
-The more irrelevant or deprecated baggage, the more likely an LLM is to hallucinate itself into a corner.
+In go it is not a big problem, no harm in deperacted `ioutil`
+or naked `done <-chan struct{}`. We can guide away from worst footguns.
+The more deperacted and irrelevant baggage, the more cornering into halucination.
 
 Even in Flutter, we managed to corner ourselves — this time into an inability to add routing.  
 But it was manageable to escape without a full rewrite.
 
-In hindsight, our beloved-to-be-hated language would have been fine.  
-LLMs may not design great architectures, but they sure love critiquing _your_ code all day long.
+In retrospective, our beloved to be hated language would be fine.
+Maybe LLM cannot come with good arhitecture,
+but can critique `Your` code all day long.
 
 Moving forward, we’re considering Svelte, Vue, or even React Native —  
 if we figure out how to make a Linux desktop build from it. 🙂
@@ -145,7 +146,7 @@ Or maybe webgpu and run inference on edge...
 Why not PHP? Laravel+Inerrtia was on the table.
 I heard developer experience is very good now.
 
-The same we could tall about others `Why nox ...?`.
+The same we could tall about others `Why not ...?`.
 Zig, htmx, rust, alpine.js, templ.
 Lots of promising and interesting options.
 No time to evaluate, not willing to risk not shiping.
@@ -158,13 +159,12 @@ Propably not good option for SSR.
 
 Vibe critiq. Maybe LLM cannot use good architecture when writing code,
 but it is very useful to critique `your` code.
-Ability to discus if i should use provider, model or just _state was a godsend.
+Ability to discus if I should use provider, model or just _state was a godsend.
 
 You don't need bels and whistles! I'm already using this project,
 for tasks that I would normaly use gemini pro.
 There is a model on **Qroq** that have web search connected,
-named `compound-beta`, and by looks of it,
-I'll shring my subscription list.
+named `compound-beta`, and it looks promising.
 
 Don't compete on features that other get right,
 You'll have hard time to catch up.
@@ -173,14 +173,38 @@ and is notexistant elsewhere.
 
 ## Future plans
 
-// WIP
+### Studio mode
 
-## 
-// nie potrzebujesz świecidełek które wszystkie innerozwiazania mają
+Groq have nice feature in developer console.
+Studio mode that allows easy experimenting with system prompts,
+context messages and A/B testing different models.
 
-// można skoncentrować się na tym co konkurencji robią źle, niż próbować ich prześcignąć w tym co robiadobrze.
+No persistancy and manual copy-pasting.
+Having persistancy in Wiydziomka enabling us
+to deliver much better studio mode.
 
-// pocketbase jest mega zajebisty, kaliber pracy i funkcjonalności które dostaliśmy na starcie za free, przeogromna. szczególnie w go który jest jawny do bólu.
+### Exposing tools to user
+
+There is no user interface that exposes MSPs or tools.
+This is not a feature that end user would benefit from.
+Power user, content creator and domain expert would benefit greatly.
+
+### Embedings and RAGs
+
+In perfect world, AI system would learn and grow interacting with own user.
+Actualy long term memory and user context is hiden at best, not existant in most cases.
+
+As a stop gap we can expose embeding database and rags to user.
+Closest thing that exist is a coding agent that asks if can perform an action in terminal.
+
+We humans are bad ad describing ourself.
+User alergic to penats? Dislike `2 + 2 - 2 = 20` language? Don't have car?
+It's posible to iteratively get system prompt good enough,
+but it is hard and very manual.
+
+We propably can use LLM itself to close the loop,
+but it have to be supervised.
+Preferably by te user, without introducing to much friction.
 
 ## Last words
 

@@ -165,10 +165,8 @@ Still, the ability to discuss whether I should use a provider, model, or just _s
 There’s a model on **Groq** with web search integration,  
 called `compound-beta`, and it looks promising.
 
-Don’t compete on features others already got right —  
-you’ll have a hard time catching up.  
-Compete on features **you** actually need —  
-especially the ones that are nonexistent elsewhere.
+Don’t compete on features others already got right — you’ll have a hard time catching up.  
+Compete on features **you** actually need — especially the ones that are nonexistent elsewhere.
 
 ## Future Plans:
 

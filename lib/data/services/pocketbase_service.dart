@@ -9,14 +9,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PocketBaseService {
   late final PocketBase pb;
 
-  PocketBaseService({String? baseUrl, AuthStore? authStore}) {
-    final String url =
-        baseUrl ??
+  PocketBaseService._internal(String url, {AuthStore? authStore}) {
+    pb = PocketBase(url, authStore: authStore);
+  }
+
+  /// Use this factory to ensure the baseUrl is loaded from SharedPreferences if not provided.
+  static Future<PocketBaseService> create({String? baseUrl, AuthStore? authStore}) async {
+    String url = baseUrl ??
+        await _getSavedBaseUrl() ??
         const String.fromEnvironment(
           'POCKETBASE_URL',
           defaultValue: 'http://localhost:8090',
         );
-    pb = PocketBase(url, authStore: authStore);
+    return PocketBaseService._internal(url, authStore: authStore);
+  }
+
+  static Future<String?> _getSavedBaseUrl() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('base_url');
   }
 
   Future<List<MessageModel>> getMessages({String? chatId}) async {

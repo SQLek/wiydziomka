@@ -20,7 +20,7 @@ void main() async {
     initial: prefs.getString('pb_auth'),
   );
 
-  final pbService = PocketBaseService(authStore: store);
+  final pbService = await PocketBaseService.create(authStore: store);
   await pbService.restoreAuth(prefs);
 
   runApp(

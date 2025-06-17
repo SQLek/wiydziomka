@@ -22,6 +22,7 @@ class _MessageListState extends State<MessageList> {
 
   List<MessageModel> _messages = [];
   bool _loading = true;
+  String? _error;
 
   @override
   void didChangeDependencies() {
@@ -31,24 +32,34 @@ class _MessageListState extends State<MessageList> {
   }
 
   Future<void> _loadInitialMessagesAndSubscribe() async {
-    setState(() => _loading = true);
-    final initial = await _pbService.getMessages(chatId: widget.chat.id);
     setState(() {
-      _messages = initial;
-      _loading = false;
+      _loading = true;
+      _error = null;
     });
-    final stream = await _pbService.subscribeMessages(widget.chat.id);
-    _subscription = stream.listen((msg) {
+    try {
+      final initial = await _pbService.getMessages(chatId: widget.chat.id);
       setState(() {
-        // Replace or add message by id
-        final idx = _messages.indexWhere((m) => m.id == msg.id);
-        if (idx >= 0) {
-          _messages[idx] = msg;
-        } else {
-          _messages.add(msg);
-        }
+        _messages = initial;
+        _loading = false;
       });
-    });
+      final stream = await _pbService.subscribeMessages(widget.chat.id);
+      _subscription = stream.listen((msg) {
+        setState(() {
+          // Replace or add message by id
+          final idx = _messages.indexWhere((m) => m.id == msg.id);
+          if (idx >= 0) {
+            _messages[idx] = msg;
+          } else {
+            _messages.add(msg);
+          }
+        });
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Unable to load messages.';
+        _loading = false;
+      });
+    }
   }
 
   @override
@@ -61,6 +72,9 @@ class _MessageListState extends State<MessageList> {
   Widget build(BuildContext context) {
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
+    }
+    if (_error != null) {
+      return Center(child: Text(_error!));
     }
     if (_messages.isEmpty) {
       return const Center(child: Text('No messages yet.'));

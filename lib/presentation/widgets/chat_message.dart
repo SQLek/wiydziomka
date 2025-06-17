@@ -52,6 +52,7 @@ class ChatMessage extends StatelessWidget {
             'thinking': ThinkingBuilder(),
           },
           shrinkWrap: true,
+          selectable: true, // Enable text selection
           styleSheet: MarkdownStyleSheet(
             p: TextStyle(
               color: Colors.black,

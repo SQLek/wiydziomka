@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wyidziomka/data/services/pocketbase_service.dart';
-import 'package:wyidziomka/presentation/widgets/message_input.dart';
-import 'package:wyidziomka/presentation/widgets/persona_selector.dart';
-import 'package:wyidziomka/presentation/widgets/responsive_scaffold.dart';
-import 'package:wyidziomka/presentation/widgets/app_drawer.dart';
+import 'package:wiydziomka/data/services/pocketbase_service.dart';
+import 'package:wiydziomka/presentation/widgets/message_input.dart';
+import 'package:wiydziomka/presentation/widgets/persona_selector.dart';
+import 'package:wiydziomka/presentation/widgets/responsive_scaffold.dart';
+import 'package:wiydziomka/presentation/widgets/app_drawer.dart';
 import 'package:go_router/go_router.dart';
 
 class NewChatScreen extends StatefulWidget {

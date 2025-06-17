@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wyidziomka/data/models/persona_model.dart';
-import 'package:wyidziomka/data/models/model_model.dart';
-import 'package:wyidziomka/data/models/chat_model.dart';
-import 'package:wyidziomka/data/services/pocketbase_service.dart';
-import 'package:wyidziomka/presentation/widgets/persona_icon.dart';
+import 'package:wiydziomka/data/models/persona_model.dart';
+import 'package:wiydziomka/data/models/model_model.dart';
+import 'package:wiydziomka/data/models/chat_model.dart';
+import 'package:wiydziomka/data/services/pocketbase_service.dart';
+import 'package:wiydziomka/presentation/widgets/persona_icon.dart';
 
 class PersonaSelector extends StatefulWidget {
   const PersonaSelector({super.key});

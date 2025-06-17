@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:wyidziomka/data/models/message_model.dart';
-import 'package:wyidziomka/data/models/persona_model.dart';
-import 'package:wyidziomka/data/models/model_model.dart';
-import 'package:wyidziomka/data/models/chat_model.dart';
+import 'package:wiydziomka/data/models/message_model.dart';
+import 'package:wiydziomka/data/models/persona_model.dart';
+import 'package:wiydziomka/data/models/model_model.dart';
+import 'package:wiydziomka/data/models/chat_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PocketBaseService {
@@ -179,5 +179,15 @@ class PocketBaseService {
         thinkingModelId: r.get<String?>('thinkingModel'),
       );
     }).toList();
+  }
+
+  /// Renames a chat by updating its name.
+  Future<void> renameChat(String chatId, String newName) async {
+    await pb.collection('chats').update(chatId, body: {'name': newName});
+  }
+
+  /// Deletes a chat by its ID.
+  Future<void> deleteChat(String chatId) async {
+    await pb.collection('chats').delete(chatId);
   }
 }

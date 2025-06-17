@@ -3,11 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:wyidziomka/data/models/chat_model.dart';
-import 'package:wyidziomka/presentation/screens/chat_screen.dart';
-import 'package:wyidziomka/presentation/screens/chats_screen.dart';
-import 'package:wyidziomka/presentation/screens/login_screen.dart';
-import 'package:wyidziomka/presentation/screens/new_chat_screen.dart';
+import 'package:wiydziomka/data/models/chat_model.dart';
+import 'package:wiydziomka/presentation/screens/chat_screen.dart';
+import 'package:wiydziomka/presentation/screens/chats_screen.dart';
+import 'package:wiydziomka/presentation/screens/login_screen.dart';
+import 'package:wiydziomka/presentation/screens/new_chat_screen.dart';
 import 'data/services/pocketbase_service.dart';
 import 'data/services/auth_provider.dart';
 

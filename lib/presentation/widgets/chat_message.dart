@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
-import 'package:wyidziomka/data/models/message_model.dart';
+import 'package:wiydziomka/data/models/message_model.dart';
 
 // Custom builder for <thinking> tag
 class ThinkingBuilder extends MarkdownElementBuilder {

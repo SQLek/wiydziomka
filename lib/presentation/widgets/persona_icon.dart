@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wyidziomka/data/models/persona_model.dart';
+import 'package:wiydziomka/data/models/persona_model.dart';
 
 class PersonaIcon extends StatelessWidget {
   final PersonaModel persona;

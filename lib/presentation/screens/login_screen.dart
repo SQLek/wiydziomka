@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wyidziomka/data/services/pocketbase_service.dart';
-import 'package:wyidziomka/data/services/auth_provider.dart';
+import 'package:wiydziomka/data/services/pocketbase_service.dart';
+import 'package:wiydziomka/data/services/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

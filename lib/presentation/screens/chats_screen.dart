@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wyidziomka/presentation/widgets/responsive_scaffold.dart';
-import 'package:wyidziomka/presentation/widgets/app_drawer.dart';
+import 'package:wiydziomka/presentation/widgets/responsive_scaffold.dart';
+import 'package:wiydziomka/presentation/widgets/app_drawer.dart';
 
 class ChatsScreen extends StatelessWidget {
   const ChatsScreen({super.key});

@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wyidziomka/data/models/chat_model.dart';
-import 'package:wyidziomka/data/models/message_model.dart';
-import 'package:wyidziomka/data/services/pocketbase_service.dart';
+import 'package:wiydziomka/data/models/chat_model.dart';
+import 'package:wiydziomka/data/models/message_model.dart';
+import 'package:wiydziomka/data/services/pocketbase_service.dart';
 
 import 'chat_message.dart';
 

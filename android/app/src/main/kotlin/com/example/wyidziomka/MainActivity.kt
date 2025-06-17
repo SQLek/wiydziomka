@@ -1,4 +1,4 @@
-package com.example.wyidziomka
+package com.example.wiydziomka
 
 import io.flutter.embedding.android.FlutterActivity
 

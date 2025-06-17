@@ -3,11 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:wyidziomka/data/models/chat_model.dart';
-import 'package:wyidziomka/presentation/screens/chat_screen.dart';
-import 'package:wyidziomka/presentation/screens/chats_screen.dart';
-import 'package:wyidziomka/presentation/screens/login_screen.dart';
-import 'package:wyidziomka/presentation/screens/new_chat_screen.dart';
+import 'package:wiydziomka/data/models/chat_model.dart';
+import 'package:wiydziomka/presentation/screens/chat_screen.dart';
+import 'package:wiydziomka/presentation/screens/chats_screen.dart';
+import 'package:wiydziomka/presentation/screens/login_screen.dart';
+import 'package:wiydziomka/presentation/screens/new_chat_screen.dart';
 import 'data/services/pocketbase_service.dart';
 import 'data/services/auth_provider.dart';
 
@@ -20,7 +20,7 @@ void main() async {
     initial: prefs.getString('pb_auth'),
   );
 
-  final pbService = PocketBaseService(authStore: store);
+  final pbService = await PocketBaseService.create(authStore: store);
   await pbService.restoreAuth(prefs);
 
   runApp(
@@ -35,7 +35,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   static Widget _buildChatScreen(BuildContext context, GoRouterState state) {
     final chatId = state.pathParameters['id'];
@@ -51,7 +51,49 @@ class MyApp extends StatelessWidget {
                 return const Scaffold(body: Center(child: CircularProgressIndicator()));
               }
               if (snapshot.hasError) {
-                return Scaffold(body: Center(child: Text('Error loading chat: \\${snapshot.error}')));
+                return Scaffold(
+                  appBar: AppBar(title: const Text('Chat')),
+                  drawer: Drawer(
+                    child: ListView(
+                      padding: EdgeInsets.zero,
+                      children: [
+                        const DrawerHeader(
+                          decoration: BoxDecoration(color: Colors.blue),
+                          child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.chat),
+                          title: const Text('New Chat'),
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            GoRouter.of(context).go('/');
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  body: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Error loading chat:\n\n${snapshot.error}',
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.add),
+                          label: const Text('Start New Chat'),
+                          onPressed: () {
+                            GoRouter.of(context).go('/');
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               }
               if (!snapshot.hasData) {
                 return const Scaffold(body: Center(child: Text('Chat not found')));
@@ -94,7 +136,7 @@ class MyApp extends StatelessWidget {
     );
     return MaterialApp.router(
       routerConfig: router,
-      title: 'GoRouter Example',
+      title: 'Wiydziomka',
       theme: ThemeData(primarySwatch: Colors.blue),
     );
   }

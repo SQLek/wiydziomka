@@ -1,22 +1,32 @@
 import 'dart:async';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:wyidziomka/data/models/message_model.dart';
-import 'package:wyidziomka/data/models/persona_model.dart';
-import 'package:wyidziomka/data/models/model_model.dart';
-import 'package:wyidziomka/data/models/chat_model.dart';
+import 'package:wiydziomka/data/models/message_model.dart';
+import 'package:wiydziomka/data/models/persona_model.dart';
+import 'package:wiydziomka/data/models/model_model.dart';
+import 'package:wiydziomka/data/models/chat_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PocketBaseService {
   late final PocketBase pb;
 
-  PocketBaseService({String? baseUrl, AuthStore? authStore}) {
-    final String url =
-        baseUrl ??
+  PocketBaseService._internal(String url, {AuthStore? authStore}) {
+    pb = PocketBase(url, authStore: authStore);
+  }
+
+  /// Use this factory to ensure the baseUrl is loaded from SharedPreferences if not provided.
+  static Future<PocketBaseService> create({String? baseUrl, AuthStore? authStore}) async {
+    String url = baseUrl ??
+        await _getSavedBaseUrl() ??
         const String.fromEnvironment(
           'POCKETBASE_URL',
           defaultValue: 'http://localhost:8090',
         );
-    pb = PocketBase(url, authStore: authStore);
+    return PocketBaseService._internal(url, authStore: authStore);
+  }
+
+  static Future<String?> _getSavedBaseUrl() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('base_url');
   }
 
   Future<List<MessageModel>> getMessages({String? chatId}) async {
@@ -179,5 +189,15 @@ class PocketBaseService {
         thinkingModelId: r.get<String?>('thinkingModel'),
       );
     }).toList();
+  }
+
+  /// Renames a chat by updating its name.
+  Future<void> renameChat(String chatId, String newName) async {
+    await pb.collection('chats').update(chatId, body: {'name': newName});
+  }
+
+  /// Deletes a chat by its ID.
+  Future<void> deleteChat(String chatId) async {
+    await pb.collection('chats').delete(chatId);
   }
 }

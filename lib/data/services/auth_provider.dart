@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wyidziomka/data/services/pocketbase_service.dart';
+import 'package:wiydziomka/data/services/pocketbase_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final PocketBaseService pbService;

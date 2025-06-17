@@ -35,7 +35,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   static Widget _buildChatScreen(BuildContext context, GoRouterState state) {
     final chatId = state.pathParameters['id'];
@@ -94,7 +94,7 @@ class MyApp extends StatelessWidget {
     );
     return MaterialApp.router(
       routerConfig: router,
-      title: 'GoRouter Example',
+      title: 'Wiydziomka',
       theme: ThemeData(primarySwatch: Colors.blue),
     );
   }

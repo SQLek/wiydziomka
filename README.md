@@ -5,7 +5,7 @@ A small-scale LLM chatting service.
 Something to bridge the gap between _“I'm doing everything manually and locally”_  
 and _“IaaS – intelligence as a service”_.
 
-No need for a PhD or engineering degree in Kubernetes and serverless cloud.
+No need for a PhD or an engineering degree in Kubernetes and a serverless cloud.
 
 It is an entry for the [T3.chat cloneathon](https://cloneathon.t3.chat/)
 
@@ -15,7 +15,7 @@ Extend it with JS, TS, or Go – and still ship it all in one binary.
 
 ## Installation
 
- - ~~Download executable from releases and double click~~... soon™
+ - ~~Download the executable from releases and double click~~... soon™
  - ~~Docker pull~~... soon™
  - ~~Flatpack/Snap/winget~~... soon™
  - ~~Wiydziomka Cloud~~... Nowhere near ready — billing, payments, security, and privacy are still missing. We prefer to stay small-scale for now.
@@ -30,7 +30,7 @@ flutter build web
 go build ./cmd/wiydziomka
 ```
 
-Commands above will clone this repo and compile executable.
+Commands above will clone this repo and compile the executable.
 
 ## Usage & maintanance
 
@@ -38,7 +38,7 @@ First start will generate OTP link to set up a superuser.
 ```shell
 wiydziomka serve
 ```
-You can always add another superuser from console.
+You can always add another superuser from the console.
 
 ```shell
 wiydziomka superuser upsert EMAIL PASS
@@ -58,7 +58,7 @@ http://127.0.0.1:8090/_/
 ```
 
 #### adding user:
-- Go to the `users` and click **+New record**
+- Go to `users` and click **+New record**
 - enter `email` used as login, `password` (and confirm it)
 - enable `verifed`
 - enter name and optionally add your avatar
@@ -100,15 +100,14 @@ You might get a few eurekas, but let’s deal with the zoology first.
 Oh, how naive we were.
 "Just add some flags in GitHub Actions" or `flutter build ios`, right?
 
-> You guys can just tap the executable on your phone or macbook and run it, right?
+> You guys can just tap the executable on your phone or MacBook and run it, right?
 
 Supporting Apple without owning Apple products (or knowing someone who does) was one of the reasons we chose Flutter in the first place...
 At the very least, you should be able to compile it from source on your MacBook 🙃
 
-
 ### Flutter – Your Dart to the Knee
 
-Our team is mainly backend, without much frontend intuition.  
+Our team is primarily backend, without much frontend intuition.  
 We were worried that no amount of vibe coding would help us navigate the modern JavaScript landscape — with all its glory and years of accumulated baggage.
 
 We believed Flutter's constrained ecosystem would be easier for us and the LLM to navigate.  
@@ -157,7 +156,7 @@ Implement features **you** actually need — especially the ones that are nonexi
 ### Studio Mode
 
 Groq has a nice feature in its developer console:  
-Studio Mode, which allows easy experimenting with system prompts,  
+Studio Mode, which allows easy experimentation with system prompts,  
 context messages, and A/B testing of different models.
 
 No persistence and manual copy-pasting required.  

@@ -5,6 +5,7 @@ import 'package:wiydziomka/data/models/persona_model.dart';
 import 'package:wiydziomka/data/models/model_model.dart';
 import 'package:wiydziomka/data/models/chat_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PocketBaseService {
   late final PocketBase pb;
@@ -64,6 +65,13 @@ class PocketBaseService {
 
   Future<void> login(String email, String password) async {
     await pb.collection('users').authWithPassword(email, password);
+  }
+
+  /// Authenticates the user with Google OAuth2 (for web).
+  Future<void> loginWithGoogle() async {
+    await pb.collection('users').authWithOAuth2('google', (url) async {
+      await launchUrl(url);
+    });
   }
 
   Future<List<PersonaModel>> getPersonas() async {

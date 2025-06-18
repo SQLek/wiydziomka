@@ -73,6 +73,37 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _loginWithGoogle() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      PocketBaseService pbService;
+      final existingPbService = Provider.of<PocketBaseService>(context, listen: false);
+      final authStore = existingPbService.pb.authStore;
+      if (!kIsWeb && _baseUrlController.text.isNotEmpty) {
+        await _saveBaseUrl(_baseUrlController.text);
+        pbService = await PocketBaseService.create(
+          baseUrl: _baseUrlController.text,
+          authStore: authStore,
+        );
+      } else {
+        pbService = existingPbService;
+      }
+      await pbService.loginWithGoogle();
+      Provider.of<AuthProvider>(context, listen: false).onLoginSuccess();
+    } catch (e) {
+      setState(() {
+        _error = 'Google login failed';
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,6 +159,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   ? const CircularProgressIndicator()
                   : const Text('Login'),
             ),
+            if (kIsWeb) ...[
+              const SizedBox(height: 16),
+              const Text('- or -'),
+              const SizedBox(height: 8),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.login),
+                label: const Text('Login with Google'),
+                onPressed: _loading ? null : _loginWithGoogle,
+              ),
+            ],
           ],
         ),
       ),

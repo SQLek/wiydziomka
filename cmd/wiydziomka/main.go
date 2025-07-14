@@ -25,6 +25,9 @@ func main() {
 	})
 
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
+		// Register custom API routes
+		se.Router.GET("/api/models-by-provider/{providerId}", HandleModelByProvider)
+
 		// serves static files from the provided dir (if exists)
 		se.Router.GET("/{path...}", apis.Static(build.WebFs(), false))
 		return se.Next()

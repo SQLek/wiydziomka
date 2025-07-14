@@ -31,8 +31,7 @@ func (s *Service) ListModels(ctx context.Context) ([]llm.Model, error) {
 	}
 	req.Header.Set("Authorization", "Bearer "+s.apiKey)
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to make request: %w", err)
 	}
@@ -96,6 +95,7 @@ func (s *Service) ListModels(ctx context.Context) ([]llm.Model, error) {
 				Name:       m.Name,
 				ExternalId: m.ID,
 				ProviderId: s.provider,
+				// other open router fields are available in the model
 			}
 			models = append(models, model)
 		}

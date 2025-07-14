@@ -8,35 +8,44 @@ type Model struct {
 }
 
 type OpenRouterModel struct {
-	ID            string      `json:"id"`
-	Created       int64       `json:"created"`
-	Object        interface{} `json:"object"`   // Can be null
-	OwnedBy       interface{} `json:"owned_by"` // Can be null
-	CanonicalSlug string      `json:"canonical_slug"`
-	HuggingFaceID string      `json:"hugging_face_id"`
-	Name          string      `json:"name"`
-	Description   string      `json:"description"`
-	ContextLength int         `json:"context_length"`
+	ID            string `json:"id"`
+	Created       int64  `json:"created"`
+	Object        any    `json:"object"`   // Can be null
+	OwnedBy       any    `json:"owned_by"` // Can be null
+	CanonicalSlug string `json:"canonical_slug"`
+	HuggingFaceID string `json:"hugging_face_id"`
+	Name          string `json:"name"`
+	Description   string `json:"description"`
+	ContextLength int    `json:"context_length"`
 
-	Modality         string   `json:"architecture.modality"`
-	InputModalities  []string `json:"architecture.input_modalities"`
-	OutputModalities []string `json:"architecture.output_modalities"`
-	Tokenizer        string   `json:"architecture.tokenizer"`
-	InstructType     string   `json:"architecture.instruct_type"`
+	Architecture        OpenRouterArchitecture `json:"architecture"`
+	Pricing             OpenRouterPricing      `json:"pricing"`
+	TopProvider         OpenRouterTopProvider  `json:"top_provider"`
+	PerRequestLimits    any                    `json:"per_request_limits"`
+	SupportedParameters []string               `json:"supported_parameters"`
+}
 
-	PricingPrompt            string `json:"pricing.prompt"`
-	PricingCompletion        string `json:"pricing.completion"`
-	PricingRequest           string `json:"pricing.request"`
-	PricingImage             string `json:"pricing.image"`
-	PricingWebSearch         string `json:"pricing.web_search"`
-	PricingInternalReasoning string `json:"pricing.internal_reasoning"`
+type OpenRouterArchitecture struct {
+	Modality         string   `json:"modality"`
+	InputModalities  []string `json:"input_modalities"`
+	OutputModalities []string `json:"output_modalities"`
+	Tokenizer        string   `json:"tokenizer"`
+	InstructType     *string  `json:"instruct_type"`
+}
 
-	TopProviderContextLength       int  `json:"top_provider.context_length"`
-	TopProviderMaxCompletionTokens int  `json:"top_provider.max_completion_tokens"`
-	TopProviderIsModerated         bool `json:"top_provider.is_moderated"`
+type OpenRouterPricing struct {
+	Prompt            string `json:"prompt"`
+	Completion        string `json:"completion"`
+	Request           string `json:"request"`
+	Image             string `json:"image"`
+	WebSearch         string `json:"web_search"`
+	InternalReasoning string `json:"internal_reasoning"`
+}
 
-	PerRequestLimits    interface{} `json:"per_request_limits"` // Can be null
-	SupportedParameters []string    `json:"supported_parameters"`
+type OpenRouterTopProvider struct {
+	ContextLength       int  `json:"context_length"`
+	MaxCompletionTokens int  `json:"max_completion_tokens"`
+	IsModerated         bool `json:"is_moderated"`
 }
 
 type GroqModel struct {
